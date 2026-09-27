@@ -7,13 +7,9 @@ import sys
 from enum import IntEnum, auto
 import secrets
 
-from load_via_app_uart import send_cmd_uart
-from load_via_app_uart import send_cmd_uart
-from uart import UART_BAUD
-from cmd_proc import system_cmd_t
-from cmd_proc import system_cmd_header_t
-from cmd_proc import START_BYTE
-from cmd_proc import STOP_BYTE
+from config.load_via_app_usb import send_cmd_serial, send_cmd_serial
+from shared.serial import SERIAL_BAUD
+from shared.cmd_proc import system_cmd_t, system_cmd_header_t, START_BYTE, STOP_BYTE
 
 class bitrate_t(IntEnum):
     null_br = 0
@@ -32,7 +28,7 @@ class freq_band_t(IntEnum):
     itu_2_fb = auto()
 
 
-def recv_cmd_uart(serial_port):
+def recv_cmd_serial(serial_port):
 
     parameter = b""
 
@@ -65,20 +61,20 @@ def recv_cmd_uart(serial_port):
     return None, None
 
     
-def configuration_get(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
+def configuration_get(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
 
     serial_port.reset_input_buffer()
     serial_port.reset_output_buffer()
 
-    send_cmd_uart(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, bytes([addr_src]))
+    send_cmd_serial(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, bytes([addr_src]))
 
     for i in range(3):  # Get MAC address
 
-        send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.mac_addr_get_cmd, None)
+        send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.mac_addr_get_cmd, None)
 
-        header, param = recv_cmd_uart(serial_port)
+        header, param = recv_cmd_serial(serial_port)
 
         if header is not None and header.command == system_cmd_t.mac_addr_cmd:
 
@@ -96,9 +92,9 @@ def configuration_get(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
     for i in range(3):  # Get firmware version
 
-        send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.firmware_ver_get_cmd, None)
+        send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.firmware_ver_get_cmd, None)
 
-        header, param = recv_cmd_uart(serial_port)
+        header, param = recv_cmd_serial(serial_port)
 
         if header is not None and header.command == system_cmd_t.firmware_ver_cmd:
 
@@ -113,9 +109,9 @@ def configuration_get(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
     for i in range(3):  # Get radio bitrate
 
-        send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.bitrate_get_cmd, None)
+        send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.bitrate_get_cmd, None)
 
-        header, param = recv_cmd_uart(serial_port)
+        header, param = recv_cmd_serial(serial_port)
 
         if header is not None and header.command == system_cmd_t.bitrate_cmd:
             print("Radio bitrate: ", end="")
@@ -147,9 +143,9 @@ def configuration_get(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
     for i in range(3):  # Get radio address
 
-        send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.echo_cmd, None)
+        send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.echo_cmd, None)
 
-        header, param = recv_cmd_uart(serial_port)
+        header, param = recv_cmd_serial(serial_port)
 
         if header is not None and header.command == system_cmd_t.echo_response_cmd:
 
@@ -165,9 +161,9 @@ def configuration_get(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
     for i in range(3): # Get frequency band
 
-        send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.freq_band_get_cmd, None)
+        send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.freq_band_get_cmd, None)
 
-        header, param = recv_cmd_uart(serial_port)
+        header, param = recv_cmd_serial(serial_port)
 
         if header is not None and header.command == system_cmd_t.freq_band_cmd:
             frequency_band = {1: "ITU 1", 2: "ITU 2"}.get(param[0], str(param[0]))
@@ -182,31 +178,31 @@ def configuration_get(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
         else:
             print("Failed to get radio frequency band.")
 
-    send_cmd_uart(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, None)
+    send_cmd_serial(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, None)
 
     serial_port.close()
 
 
-def radio_addr_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8, new_addr: c_uint8):
+def radio_addr_set(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8, new_addr: c_uint8):
 
     if new_addr <= 0 or new_addr >= 255:
         print("Error: Address out of range. Addresses must be between 1-addr_src.")
         sys.exit(1)  
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
 
-    send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.assign_addr_cmd, bytes((int(new_addr),)),)
+    send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.assign_addr_cmd, bytes((int(new_addr),)),)
 
     serial_port.close()
 
     print("Radio address set: " + str(new_addr))
 
 
-def bitrate_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8,  new_bitrate: bitrate_t):
+def bitrate_set(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8,  new_bitrate: bitrate_t):
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
 
-    send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.set_bitrate_cmd, bytes((int(new_bitrate),)))
+    send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.set_bitrate_cmd, bytes((int(new_bitrate),)))
 
     serial_port.close()
 
@@ -231,11 +227,11 @@ def bitrate_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8,  new_bitr
 
 
 
-def encryption_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8,  enabled: bool):
+def encryption_set(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8,  enabled: bool):
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
 
-    send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.encryption_enable_cmd, bytes((int(enabled),)),)
+    send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.encryption_enable_cmd, bytes((int(enabled),)),)
 
     serial_port.close()
 
@@ -248,22 +244,22 @@ def encryption_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8,  enabl
         print("Radio encryption disabled.")
 
 
-def cipher_key_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8,  cipher_key: str):
+def cipher_key_set(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8,  cipher_key: str):
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
     
-    send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.set_cipher_key_cmd, bytes.fromhex(cipher_key))
+    send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.set_cipher_key_cmd, bytes.fromhex(cipher_key))
     
     serial_port.close()
 
     print("Encryption key set. " + cipher_key)
 
 
-def freq_band_set(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8,  freq_band: freq_band_t, default_channel: c_uint8):
+def freq_band_set(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8,  freq_band: freq_band_t, default_channel: c_uint8):
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
     
-    send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.set_freq_band_cmd, bytes((int(freq_band), int(default_channel))),)
+    send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.set_freq_band_cmd, bytes((int(freq_band), int(default_channel))),)
     
     serial_port.close()
 
@@ -280,9 +276,9 @@ def is_radio_local(serial_port, addr_src: c_uint8, addr_dest: c_uint8):
 
     for i in range(3):
 
-        send_cmd_uart(serial_port, addr_src, 255, system_cmd_t.echo_cmd, None)
+        send_cmd_serial(serial_port, addr_src, 255, system_cmd_t.echo_cmd, None)
 
-        header, _ = recv_cmd_uart(serial_port)
+        header, _ = recv_cmd_serial(serial_port)
 
         if header is not None and header.command == system_cmd_t.echo_response_cmd:
 
@@ -297,14 +293,14 @@ def is_radio_local(serial_port, addr_src: c_uint8, addr_dest: c_uint8):
         return None
             
 
-def radio_reset(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
+def radio_reset(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
-    serial_port = serial.Serial(port=uart_port, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
 
     serial_port.reset_input_buffer()
     serial_port.reset_output_buffer()
 
-    send_cmd_uart(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, bytes([addr_src]))
+    send_cmd_serial(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, bytes([addr_src]))
 
     radio_is_local = is_radio_local(serial_port, addr_src, addr_dest)
 
@@ -322,9 +318,9 @@ def radio_reset(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
         for i in range(3):
 
-            send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.reset_radio_cmd, None)
+            send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.reset_radio_cmd, None)
 
-            header, _ = recv_cmd_uart(serial_port)
+            header, _ = recv_cmd_serial(serial_port)
         
             if header is not None and header.command == system_cmd_t.uart_peers_request_cmd:
 
@@ -342,13 +338,13 @@ def radio_reset(uart_port: str, addr_src: c_uint8, addr_dest: c_uint8):
 
         for i in range(3):
 
-            send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.reset_radio_cmd, None)
+            send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.reset_radio_cmd, None)
 
             time.sleep(1)
 
-            send_cmd_uart(serial_port, addr_src, addr_dest, system_cmd_t.echo_cmd, None)
+            send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.echo_cmd, None)
 
-            header, _ = recv_cmd_uart(serial_port)
+            header, _ = recv_cmd_serial(serial_port)
 
             if header is not None and header.command == system_cmd_t.echo_response_cmd:
 
@@ -371,7 +367,7 @@ if __name__ == "__main__":
 
     print("Welcome to the Orbweaver Command Line Configurator.")
 
-    uart_port = input("Enter the comm port you would like to use for this session: ")
+    serial_port = input("Enter the comm port you would like to use for this session: ")
     addr_src_str = input("Enter the source address you would like to use for this session (press enter to use 254): ")
     addr_dest_str = input("Enter the destination address you would like to use for this session (press enter to use 255): ")
 
@@ -415,7 +411,7 @@ if __name__ == "__main__":
 
                 if new_addr > 0 and new_addr < 255:
 
-                    radio_addr_set(uart_port, addr_src, addr_dest, new_addr)
+                    radio_addr_set(serial_port, addr_src, addr_dest, new_addr)
 
             case "2":
 
@@ -450,7 +446,7 @@ if __name__ == "__main__":
                 else:
                     continue
 
-                bitrate_set(uart_port, addr_src, addr_dest,  new_bitrate)
+                bitrate_set(serial_port, addr_src, addr_dest,  new_bitrate)
 
             case "3":
 
@@ -462,13 +458,13 @@ if __name__ == "__main__":
 
                     cipher_key = secrets.token_hex(16)
 
-                    cipher_key_set(uart_port, addr_src, addr_dest,  cipher_key)
+                    cipher_key_set(serial_port, addr_src, addr_dest,  cipher_key)
 
                 if "2" == selection:
 
                     cipher_key = input("Enter an encryption key (16 hex digits): ")
 
-                    cipher_key_set(uart_port, addr_src, addr_dest, cipher_key)
+                    cipher_key_set(serial_port, addr_src, addr_dest, cipher_key)
                      
             case "4":
 
@@ -478,11 +474,11 @@ if __name__ == "__main__":
 
                 if "1" == selection:
 
-                    encryption_set(uart_port, addr_src, addr_dest, True)
+                    encryption_set(serial_port, addr_src, addr_dest, True)
 
                 elif "2" == selection:
                 
-                    encryption_set(uart_port, addr_src, addr_dest, False)
+                    encryption_set(serial_port, addr_src, addr_dest, False)
                                 
             case "5":
 
@@ -510,7 +506,7 @@ if __name__ == "__main__":
 
                     if default_channel >= 0 and default_channel <= 14:
 
-                        freq_band_set(uart_port, addr_src, addr_dest,  freq_band, default_channel)
+                        freq_band_set(serial_port, addr_src, addr_dest,  freq_band, default_channel)
 
                 if "2" == selection:
                     
@@ -531,15 +527,15 @@ if __name__ == "__main__":
 
                     if default_channel >= 0 and default_channel <= 52:
 
-                        freq_band_set(uart_port, addr_src, addr_dest,  freq_band, default_channel)         
+                        freq_band_set(serial_port, addr_src, addr_dest,  freq_band, default_channel)         
 
             case "6":     
                 
-                configuration_get(uart_port, addr_src, addr_dest)    
+                configuration_get(serial_port, addr_src, addr_dest)    
 
             case "7":
 
-                radio_reset(uart_port, addr_src, addr_dest)
+                radio_reset(serial_port, addr_src, addr_dest)
 
             case "8":
 

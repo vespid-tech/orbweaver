@@ -8,14 +8,9 @@ import time
 import subprocess
 from unittest import case
 
-from ow_protocol import *
-from queues import QElement
-from queues import spi_queue
-from queues import uart_queue
-from queues import cmd_proc_queue
-from queues import test_queue
-from queues import file_transfer_queue
-from status import log_error
+from shared.ow_protocol import *
+from shared.queues import QElement, spi_queue, serial_queue, cmd_proc_queue, test_queue, file_transfer_queue
+from shared.status import log_error
 
 TCP_PEER_ADDR = 0x00 
 OUR_ADDR = 0x02
@@ -25,19 +20,19 @@ def cmd_proc_thread():
 
     global TCP_PEER_ADDR
     conn = None
-    use_uart = False
+    use_serial = False
 
     sys_cmd_header = system_cmd_header_t()
     sys_cmd_header.aad.addr_src = OUR_ADDR
     sys_cmd_header.aad.addr_dest = BROADCAST_ADDR
     sys_cmd_header.length = sizeof(system_cmd_header_t) + 1  #+1 for OUR_ADDR
 
-    if use_uart:
+    if use_serial:
 
         sys_cmd_header.command = system_cmd_t.uart_peers_cmd
         q_msg = QElement(cmd="SEND", param=bytes(sys_cmd_header) + bytes([OUR_ADDR]))
 
-        uart_queue.put(q_msg)
+        serial_queue.put(q_msg)
 
     else:
 
@@ -74,8 +69,8 @@ def cmd_proc_thread():
                 q_msg = QElement(cmd="SEND", param=q_msg.param)
 
                 # Forward the message as appropriate
-                if use_uart:
-                    uart_queue.put(q_msg)
+                if use_serial:
+                    serial_queue.put(q_msg)
                 else:
                     spi_queue.put(q_msg)
 
@@ -107,8 +102,8 @@ def cmd_proc_thread():
                             send_msg = bytes(sys_cmd_header_send) + q_msg.param[sizeof(system_cmd_header_t):]
                             q_msg = QElement(cmd="SEND", param=send_msg)
 
-                            if use_uart:
-                                uart_queue.put(q_msg)
+                            if use_serial:
+                                serial_queue.put(q_msg)
                             else:
                                 spi_queue.put(q_msg)
         
@@ -116,8 +111,8 @@ def cmd_proc_thread():
                     case system_cmd_t.echo_response_cmd:
                         test_queue.put(q_msg)  # If we got an echo response, it must be for the endurance test. Send it to the test queue.
                 
-                    case system_cmd_t.uart_enable_cmd:
-                        use_uart = q_msg.param[sizeof(system_cmd_header_t)]  # The parameter is a single byte that is 1 if we should use UART and 0 if we should use SPI
+                    case system_cmd_t.serial_enable_cmd:
+                        use_serial = q_msg.param[sizeof(system_cmd_header_t)]  # The parameter is a single byte that is 1 if we should use serial and 0 if we should use SPI
 
                     case system_cmd_t.uart_peers_request_cmd:
 
@@ -138,11 +133,11 @@ def cmd_proc_thread():
                             q_msg = QElement(cmd="SEND", param=bytes(sys_cmd_header_send) + bytes([TCP_PEER_ADDR]) + bytes([OUR_ADDR]))
                         
                         
-                        uart_queue.put(q_msg)
+                        serial_queue.put(q_msg)
                         
                     case system_cmd_t.spi_peers_request_cmd:
 
-                        if not use_uart:
+                        if not use_serial:
 
                             sys_cmd_header_send = system_cmd_header_t()
                             sys_cmd_header_send.command = system_cmd_t.spi_peers_cmd
@@ -186,9 +181,9 @@ def cmd_proc_thread():
                             q_msg = QElement(cmd="SEND", param=bytes(sys_cmd_header_send) + bytes([TCP_PEER_ADDR]) + bytes([OUR_ADDR]))
 
 
-                        if use_uart:
+                        if use_serial:
                             sys_cmd_header_send.command = system_cmd_t.uart_peers_cmd
-                            uart_queue.put(q_msg)
+                            serial_queue.put(q_msg)
                         else:
                             sys_cmd_header_send.command = system_cmd_t.spi_peers_cmd
                             spi_queue.put(q_msg)
@@ -257,8 +252,8 @@ def cmd_proc_thread():
                 q_msg = QElement(cmd="SEND", param=q_msg.param)
 
                 # Forward the message as appropriate
-                if use_uart:
-                    uart_queue.put(q_msg)
+                if use_serial:
+                    serial_queue.put(q_msg)
                 else:
                     spi_queue.put(q_msg)
 

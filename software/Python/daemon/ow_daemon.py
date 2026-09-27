@@ -14,9 +14,9 @@ from cmd_proc import START_BYTE
 from cmd_proc import STOP_BYTE
 
 from spi import spi_thread
-from uart import uart_rx_thread
-from uart import uart_tx_thread
-from uart import init_uart
+from serial import serial_rx_thread
+from serial import serial_tx_thread
+from serial import init_serial
 from radio_tests import endurance_test_thread
 
 from queues import QElement
@@ -105,7 +105,7 @@ subprocess.run(["pinctrl", "set", "17", "ip", "pn"])        #Reset high (line in
 
 # subprocess.run(["pinctrl", "set", "22", "op", "dl", "pn"])  #Boot low
 
-init_uart()
+init_serial()
 
 thread_cmd_proc = threading.Thread(target=cmd_proc_thread, daemon=True)
 thread_cmd_proc.start()
@@ -117,15 +117,15 @@ thread_spi.start()
 
 print("SPI thread started.")
 
-thread_uart_rx = threading.Thread(target=uart_rx_thread, daemon=True)
-thread_uart_rx.start()
+thread_serial_rx = threading.Thread(target=serial_rx_thread, daemon=True)
+thread_serial_rx.start()
 
-print("UART RX thread started.")
+print("serial RX thread started.")
 
-thread_uart_tx = threading.Thread(target=uart_tx_thread, daemon=True)
-thread_uart_tx.start()
+thread_serial_tx = threading.Thread(target=serial_tx_thread, daemon=True)
+thread_serial_tx.start()
 
-print("UART TX thread started.")
+print("serial TX thread started.")
 
 thread_file_transfer = threading.Thread(target=file_transfer_thread, daemon=True)
 thread_file_transfer.start()

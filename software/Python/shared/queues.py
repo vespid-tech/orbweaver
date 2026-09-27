@@ -11,6 +11,6 @@ class QElement:
 # All the queues used to communicate between threads.
 cmd_proc_queue = queue.Queue()
 spi_queue = queue.Queue()
-uart_queue = queue.Queue()
+serial_queue = queue.Queue()
 test_queue = queue.Queue()
 file_transfer_queue = queue.Queue()

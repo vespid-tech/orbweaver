@@ -4,13 +4,8 @@ from ctypes import *
 
 from isort import file
 
-from cmd_proc import system_cmd_header_t
-from cmd_proc import OUR_ADDR
-from cmd_proc import system_cmd_t
-from queues import QElement
-from queues import cmd_proc_queue
-from queues import file_transfer_queue
-
+from shared.cmd_proc import system_cmd_header_t, OUR_ADDR, system_cmd_t
+from shared.queues import QElement, cmd_proc_queue, file_transfer_queue
 
 def file_transfer_thread():
 

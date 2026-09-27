@@ -9,9 +9,9 @@ from tkinter import filedialog, messagebox, ttk
 import serial
 import serial.tools.list_ports
 
-from load_via_app_uart import load_via_uart as load_via_app_uart
-from load_via_bl_uart import load_via_bl_uart
-from configure import (
+from config.load_via_app_usb import load_via_serial as load_via_app_serial
+from config.load_via_bl_usb import load_via_bl_serial
+from config.ow_config import (
     bitrate_set,
     cipher_key_set,
     configuration_get,
@@ -622,9 +622,9 @@ class Configurator:
         try:
             with redirect_stdout(gui_output), redirect_stderr(gui_output):
                 if load_mode == "Bootloader":
-                    load_via_bl_uart(file_path, com_port)
+                    load_via_bl_serial(file_path, com_port)
                 else:
-                    load_via_app_uart(
+                    load_via_app_serial(
                         receive_address, radio_address, file_path, com_port
                     )
         except SystemExit as load_error:

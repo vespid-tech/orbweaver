@@ -1,11 +1,11 @@
 import serial
 import time
 
-UART_PORT = "COM6"  # Raspberry Pi UART port (adjust as needed)
-UART_BAUD = 9600
+SERIAL_PORT = "COM6"  # Raspberry Pi SERIAL port (adjust as needed)
+SERIAL_BAUD = 9600
 
     
-ser = serial.Serial(port=UART_PORT, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
+ser = serial.Serial(port=SERIAL_PORT, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=1)
 
 ser.reset_input_buffer()
 ser.reset_output_buffer()
@@ -31,7 +31,7 @@ while True:
     # Optional indicator to show the script is working in real time
     print(".", end="", flush=True) 
     
-    # Short micro-delay to avoid saturating the Holtek UART bridge buffer
+    # Short micro-delay to avoid saturating the Holtek SERIAL bridge buffer
     time.sleep(0.01)
 
 

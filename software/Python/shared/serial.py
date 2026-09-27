@@ -3,41 +3,37 @@ import threading
 import time
 from ctypes import *
 
-from cmd_proc import OUR_ADDR, BROADCAST_ADDR, system_cmd_t
-from cmd_proc import system_cmd_header_t
-from cmd_proc import START_BYTE
-from cmd_proc import STOP_BYTE
+from shared.cmd_proc import OUR_ADDR, BROADCAST_ADDR, system_cmd_t, system_cmd_header_t, START_BYTE, STOP_BYTE
+from shared.queues import QElement, cmd_proc_queue, serial_queue
 
-from queues import QElement, cmd_proc_queue, uart_queue
-
-# UART Configuration
-UART_PORT = "/dev/ttyACM0"  # Raspberry Pi UART port (adjust as needed)
-UART_BAUD = 460800
+# SERIAL Configuration
+SERIAL_PORT = "/dev/ttyACM0"  # Raspberry Pi SERIAL port (adjust as needed)
+SERIAL_BAUD = 460800
 
 ser = None
 
-def init_uart():
+def init_serial():
 
     global ser
 
     try:
-        ser = serial.Serial(port=UART_PORT, baudrate=UART_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None, rtscts=True)
+        ser = serial.Serial(port=SERIAL_PORT, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None, rtscts=True)
     except:
-        print(f"Error could not open serial port: {UART_PORT}")
+        print(f"Error could not open serial port: {SERIAL_PORT}")
 
 
-def uart_tx_thread():
+def serial_tx_thread():
     
     global ser
 
-    print("UART TX thread started.")
+    print("Serial TX thread started.")
     while True:
 
         try:
             
-            q_msg = uart_queue.get(block=True)  # Wait forever for a message
+            q_msg = serial_queue.get(block=True)  # Wait forever for a message
         
-            print("UART TX thread received a message.")
+            print("Serial TX thread received a message.")
             
             if q_msg and q_msg.cmd == "SEND":
         
@@ -46,9 +42,9 @@ def uart_tx_thread():
 
         except:
 
-            print("UART send failed.")
+            print("Serial send failed.")
 
-def uart_recv_msg(ser_port):
+def serial_recv_msg(ser_port):
 
     parameter = b""
     recv_byte = ser_port.read(1)
@@ -87,15 +83,15 @@ def uart_recv_msg(ser_port):
 
     return None, None  
 
-def uart_rx_thread():
+def serial_rx_thread():
 
     global ser
 
-    init_uart()
+    init_serial()
 
     while True:
 
-        header, parameter = uart_recv_msg(ser)
+        header, parameter = serial_recv_msg(ser)
 
         if header is not None and parameter is not None:
 

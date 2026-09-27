@@ -9,29 +9,40 @@ import time
 import zlib
 from functools import wraps
 
-from ow_protocol import *
-from cmd_proc import BROADCAST_ADDR
-from cmd_proc import system_cmd_header_t, system_cmd_t
-from cmd_proc import START_BYTE
-from cmd_proc import STOP_BYTE
-from serial import SERIAL_BAUD, serial_recv_msg
+from shared.ow_protocol import *
+from shared.cmd_proc import BROADCAST_ADDR
+from shared.cmd_proc import system_cmd_header_t, system_cmd_t
+from shared.cmd_proc import START_BYTE
+from shared.cmd_proc import STOP_BYTE
+from shared.serial import SERIAL_BAUD, serial_recv_msg
 
 FLASH_METADATA_ADDR = 0xFF00
 FLASH_APP_START_ADDR = 0x10000
 
 FRAG_SIZE = 48
 
-serial_port = None
-
-
 def close_serial_port(function):
     @wraps(function)
-    def wrapper(*args, **kwargs):
+    def wrapper(our_addr, radio_addr, bin_path, port_name):
+        bin_path = Path(bin_path)
+        if not bin_path.is_file():
+            print(f"Error: File not found {bin_path}")
+            sys.exit(1)
+
+        port = serial.Serial(
+            port=port_name,
+            baudrate=SERIAL_BAUD,
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=2,
+            rtscts=True,
+        )
         try:
-            return function(*args, **kwargs)
+            return function(our_addr, radio_addr, bin_path, port)
         finally:
-            if serial_port is not None and serial_port.is_open:
-                serial_port.close()
+            if port.is_open:
+                port.close()
 
     return wrapper
 
@@ -68,7 +79,7 @@ def send_cmd_serial(serial_port: serial.Serial, our_addr: c_uint8, radio_addr: c
     serial_port.write(send_msg)
 
 
-def wait_for_ack():
+def wait_for_ack(serial_port):
 
     header, _ = serial_recv_msg(serial_port)
     
@@ -79,19 +90,19 @@ def wait_for_ack():
         return False
     
     
-def flash_erase(flash_erase_param: flash_erase_param_t, our_addr, radio_addr):
+def flash_erase(serial_port, flash_erase_param: flash_erase_param_t, our_addr, radio_addr):
 
         for i in range(3):
 
             send_cmd_serial(serial_port, our_addr, radio_addr, system_cmd_t.flash_erase_cmd, bytes(flash_erase_param))
 
-            if True ==  wait_for_ack():
+            if True == wait_for_ack(serial_port):
                 return True
 
             elif i >= 2:
-                exit_with_error("Flash erase failed.")
+                exit_with_error(serial_port, our_addr, "Flash erase failed.")
 
-def is_radio_local(our_addr, radio_addr):
+def is_radio_local(serial_port, our_addr, radio_addr):
 
     for i in range(3):
 
@@ -103,7 +114,7 @@ def is_radio_local(our_addr, radio_addr):
 
             status_param = status_param_t.from_buffer_copy(parameter)
 
-            if our_addr in status_param.serial_peers:
+            if our_addr in status_param.uart_peers:
                 return True
             else:
                 return False
@@ -112,13 +123,12 @@ def is_radio_local(our_addr, radio_addr):
             continue
 
         else:
-            exit_with_error("Unable to communicate with radio.")
+            exit_with_error(serial_port, our_addr, "Unable to communicate with radio.")
 
 
-def exit_with_error(message):
+def exit_with_error(serial_port, our_addr, message):
     print(f"Error: {message}")
-    send_cmd_serial(serial_port, our_addr, BROADCAST_ADDR, system_cmd_t.serial_peers_cmd, None)
-    serial_port.close()
+    send_cmd_serial(serial_port, our_addr, BROADCAST_ADDR, system_cmd_t.uart_peers_cmd, None)
     sys.exit(1)
     
 # def recv_cmd_serial():
@@ -158,19 +168,10 @@ def exit_with_error(message):
 @close_serial_port
 def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
 
-    global serial_port
-    bin_path = Path(bin_path)
-
-    if not bin_path.is_file():
-        print(f"Error: File not found {bin_path}")
-        sys.exit(1)  
-
-    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
-
     serial_port.reset_input_buffer()
     serial_port.reset_output_buffer()
 
-    send_cmd_serial(serial_port, our_addr, BROADCAST_ADDR, system_cmd_t.serial_peers_cmd, bytes([our_addr]))
+    send_cmd_serial(serial_port, our_addr, BROADCAST_ADDR, system_cmd_t.uart_peers_cmd, bytes([our_addr]))
 
     radio_is_local = True
 
@@ -180,7 +181,7 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
 
     else:
 
-        radio_is_local = is_radio_local(our_addr, radio_addr)
+        radio_is_local = is_radio_local(serial_port, our_addr, radio_addr)
 
         if radio_is_local:
             print("Updating local radio.")
@@ -202,7 +203,7 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
             continue
     
         else:
-            exit_with_error("Unable to get firmware version.")
+            exit_with_error(serial_port, our_addr, "Unable to get firmware version.")
 
     received_version = param.split(b"\x00", 1)[0].decode("ascii")
 
@@ -215,7 +216,7 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
 
     print("Erasing metadata...")
 
-    flash_erase(flash_erase_param, our_addr, radio_addr)
+    flash_erase(serial_port, flash_erase_param, our_addr, radio_addr)
 
     for i in range(1, 16):
 
@@ -230,7 +231,7 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
         else:
             print(f"\rErasing block {i}")
 
-        flash_erase(flash_erase_param, our_addr, radio_addr)
+        flash_erase(serial_port, flash_erase_param, our_addr, radio_addr)
 
     crc = 0
 
@@ -264,11 +265,11 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
 
             send_cmd_serial(serial_port, our_addr, radio_addr, system_cmd_t.flash_write_cmd, bytes(flash_write_param) + fragment)
 
-            if True == wait_for_ack():
+            if True == wait_for_ack(serial_port):
                 break
     
             elif j >= 2:
-                exit_with_error(f"Write fragment {i} failed.")
+                exit_with_error(serial_port, our_addr, f"Write fragment {i} failed.")
 
 
     write_metadata = app_metadata_param_t()
@@ -290,11 +291,11 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
 
         send_cmd_serial(serial_port, our_addr, radio_addr, system_cmd_t.flash_write_cmd, bytes(flash_write_param) + metadata_bytes)
 
-        if True == wait_for_ack():
+        if True == wait_for_ack(serial_port):
             break
         
         elif i >= 2:
-            exit_with_error("Write metadata failed.")
+            exit_with_error(serial_port, our_addr, "Write metadata failed.")
 
     flash_read_param = flash_read_param_t()
     flash_read_param.address = FLASH_METADATA_ADDR
@@ -315,12 +316,12 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
             continue
     
         else:
-            exit_with_error("Flash read metadata failed.")
+            exit_with_error(serial_port, our_addr, "Flash read metadata failed.")
 
     received_metadata = app_metadata_param_t.from_buffer_copy(param)
 
     if bytes(received_metadata) != metadata_bytes:
-        exit_with_error("Read metadata does not match written metadata.")
+        exit_with_error(serial_port, our_addr, "Read metadata does not match written metadata.")
 
     print("Metadata verified.")
 
@@ -348,7 +349,7 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
                         continue
 
                     else:
-                       exit_with_error(f"Read fragment {i} does not match expected data.")
+                       exit_with_error(serial_port, our_addr, f"Read fragment {i} does not match expected data.")
 
             print(f"\rVerified fragment {i}", end="", flush=True)
 
@@ -363,13 +364,13 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
         serial_port.timeout = 10
         header, param = serial_recv_msg(serial_port)
 
-        if header is not None and system_cmd_t.serial_peers_request_cmd == header.command:
+        if header is not None and system_cmd_t.uart_peers_request_cmd == header.command:
 
             serial_port.timeout = 3
-            send_cmd_serial(serial_port, our_addr, radio_addr, system_cmd_t.serial_peers_cmd, bytes([our_addr]))
+            send_cmd_serial(serial_port, our_addr, radio_addr, system_cmd_t.uart_peers_cmd, bytes([our_addr]))
 
         else:
-            exit_with_error("Reset radio failed.")
+            exit_with_error(serial_port, our_addr, "Reset radio failed.")
 
     else:
 
@@ -390,7 +391,7 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
                 continue
 
             else:
-                exit_with_error("Reset radio failed.")
+                exit_with_error(serial_port, our_addr, "Reset radio failed.")
                 
 
     for i in range(3):
@@ -406,16 +407,15 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
             continue
 
         else:
-           exit_with_error("Unable to get firmware version.")
+           exit_with_error(serial_port, our_addr, "Unable to get firmware version.")
 
     received_version = param.split(b"\x00", 1)[0].decode("ascii")
     expected_version = bin_path.stem.rsplit("_", 1)[-1].split(".", 1)[0]
 
     if received_version != expected_version:
-        exit_with_error(f"Firmware version mismatch. Expected {expected_version}, received {received_version}.")
+        exit_with_error(serial_port, our_addr, f"Firmware version mismatch. Expected {expected_version}, received {received_version}.")
 
-    send_cmd_serial(serial_port, our_addr, BROADCAST_ADDR, system_cmd_t.serial_peers_cmd, None)
-    serial_port.close()
+    send_cmd_serial(serial_port, our_addr, BROADCAST_ADDR, system_cmd_t.uart_peers_cmd, None)
 
     print(f"Firmware version successfully loaded: {received_version}")
     print("Loading complete.")

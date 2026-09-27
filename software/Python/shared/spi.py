@@ -7,12 +7,8 @@ import spidev
 import RPi.GPIO as GPIO
 import queue
 
-from cmd_proc import OUR_ADDR, BROADCAST_ADDR, system_cmd_t
-from cmd_proc import system_cmd_header_t
-from cmd_proc import START_BYTE
-from cmd_proc import STOP_BYTE
-from queues import QElement
-from queues import spi_queue, cmd_proc_queue
+from shared.cmd_proc import OUR_ADDR, BROADCAST_ADDR, system_cmd_t, system_cmd_header_t, START_BYTE, STOP_BYTE
+from shared.queues import QElement, spi_queue, cmd_proc_queue
 
 
 DATA_READY_PIN = 27

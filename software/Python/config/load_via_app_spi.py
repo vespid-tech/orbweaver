@@ -11,13 +11,9 @@ import time
 import zlib
 import RPi.GPIO as GPIO
 
-from ow_protocol import *
-from cmd_proc import BROADCAST_ADDR
-from cmd_proc import system_cmd_header_t, system_cmd_t
-from cmd_proc import START_BYTE
-from cmd_proc import STOP_BYTE
-from spi import DATA_READY_PIN, RADIO_BUSY_PIN
-from spi import spi_recv_msg
+from shared.ow_protocol import *
+from shared.cmd_proc import BROADCAST_ADDR, system_cmd_header_t, system_cmd_t, START_BYTE, STOP_BYTE
+from shared.spi import DATA_READY_PIN, RADIO_BUSY_PIN, spi_recv_msg
 
 
 FLASH_METADATA_ADDR = 0xFF00
