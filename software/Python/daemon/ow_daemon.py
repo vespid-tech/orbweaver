@@ -2,26 +2,21 @@ from email import header
 import enum
 import socket
 import threading
+import sys
 from ctypes import *
+from pathlib import Path
 import subprocess
 from time import time
 
-import cmd_proc
-from cmd_proc import OUR_ADDR, cmd_proc_thread
-from cmd_proc import system_cmd_t
-from cmd_proc import system_cmd_header_t
-from cmd_proc import START_BYTE
-from cmd_proc import STOP_BYTE
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from spi import spi_thread
-from serial import serial_rx_thread
-from serial import serial_tx_thread
-from serial import init_serial
-from radio_tests import endurance_test_thread
+from shared.cmd_proc import OUR_ADDR, cmd_proc_thread, system_cmd_t, system_cmd_header_t, START_BYTE, STOP_BYTE
 
-from queues import QElement
-from queues import cmd_proc_queue
-from file_transfer import file_transfer_thread
+from shared.spi import spi_thread
+from shared.serial import serial_rx_thread, serial_tx_thread, init_serial
+from shared.queues import QElement
+from shared.queues import cmd_proc_queue
+from shared.file_transfer import file_transfer_thread
 
 
 HOST = "0.0.0.0"  # all interfaces
