@@ -5,7 +5,13 @@
 	(uuid "60452dac-b6a4-46ed-b82d-e4d65188999a")
 	(paper "B")
 	(title_block
-		(title "Bridge 0")
+		(title "Orbweaver")
+		(date "2026-09-28")
+		(rev "1")
+		(company "Vespid")
+		(comment 1 "github.com/vespid-tech/orbweaver")
+		(comment 2 "www.vespidtech.com")
+		(comment 3 "License: CERN-OHL-S-2.0")
 	)
 	(lib_symbols
 		(symbol "PCM_JLCPCB-Capacitors:0402,100nF"
@@ -19112,7 +19118,7 @@
 			)
 		)
 		(instances
-			(project "bridge_0"
+			(project "mcu"
 				(path "/60452dac-b6a4-46ed-b82d-e4d65188999a"
 					(page "4")
 				)
@@ -19154,7 +19160,7 @@
 			)
 		)
 		(instances
-			(project "bridge_0"
+			(project "mcu"
 				(path "/60452dac-b6a4-46ed-b82d-e4d65188999a"
 					(page "2")
 				)
@@ -19196,7 +19202,7 @@
 			)
 		)
 		(instances
-			(project "bridge_0"
+			(project "mcu"
 				(path "/60452dac-b6a4-46ed-b82d-e4d65188999a"
 					(page "3")
 				)
@@ -19228,7 +19234,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Sheetfile" "untitled.kicad_sch"
+		(property "Sheetfile" "memory.kicad_sch"
 			(at 24.13 255.8546 0)
 			(effects
 				(font
@@ -19238,7 +19244,7 @@
 			)
 		)
 		(instances
-			(project "bridge_0"
+			(project "mcu"
 				(path "/60452dac-b6a4-46ed-b82d-e4d65188999a"
 					(page "5")
 				)

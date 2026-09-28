@@ -4,6 +4,15 @@
 	(generator_version "9.0")
 	(uuid "a0aa991e-fc97-4bd3-89b0-9f26d00e6576")
 	(paper "A4")
+	(title_block
+		(title "Orbweaver")
+		(date "2026-09-28")
+		(rev "1")
+		(company "Vespid")
+		(comment 1 "github.com/vespid-tech/orbweaver")
+		(comment 2 "www.vespidtech.com")
+		(comment 3 "License: CERN-OHL-S-2.0")
+	)
 	(lib_symbols
 		(symbol "LFB18868MBG9E212:LFB18868MBG9E212"
 			(pin_names

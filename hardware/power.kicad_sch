@@ -5,7 +5,13 @@
 	(uuid "92667dad-5fa2-4c0b-b83f-e5247bbb5582")
 	(paper "A4")
 	(title_block
-		(title "Bridge_0")
+		(title "Orbweaver")
+		(date "2026-09-28")
+		(rev "1")
+		(company "Vespid")
+		(comment 1 "github.com/vespid-tech/orbweaver")
+		(comment 2 "www.vespidtech.com")
+		(comment 3 "License: CERN-OHL-S-2.0")
 	)
 	(lib_symbols
 		(symbol "PCM_JLCPCB-Capacitors:0402,1uF"
