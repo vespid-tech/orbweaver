@@ -1,5 +1,7 @@
 # orbweaver
 
+![Alt Text](./images/ow_pcb.png)
+
 Orbweaver is a Sub-GHz HAT+ designed for the Raspberry Pi 5. When loaded with the Orbweaver firmware, it allows users to set-up peer-to-peer mesh networks between Raspberry Pi's, Desktop/Laptops, and Android mobile devices.
 
 # Licensing & Trademarks
