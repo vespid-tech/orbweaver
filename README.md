@@ -14,7 +14,7 @@ Orbweaver is a Sub-GHz HAT+ designed for the Raspberry Pi 5. When loaded with th
 * The full text of these licenses can be found in this repository in the hardware, software, and firmware folders they apply to.
 
 ### Non-open Source Components
-* **Trademarks:** "Vespid", the Vespid logo, and "Orbweaver" are trademarks of Vespid LLC.
+* **Trademarks:** "Vespid," "Orbweaver," and associated logos are trademarks of Vespid.
 
 # Questions, Info, Help
 

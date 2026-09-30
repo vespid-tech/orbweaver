@@ -77,7 +77,6 @@ void uart_init(void)
     HWREG(UART0_BASE + UART_O_IBRD) = 0x0000001A;   //Set the UART to run at 115200 baud
     HWREG(UART0_BASE + UART_O_FBRD) = 0x00000003;   //Set the UART to run at 115200 baud
 */
-
     HWREG(UART0_BASE + UART_O_IBRD) = 0x00000006;   //Set the UART to run at 460800 baud
     HWREG(UART0_BASE + UART_O_FBRD) = 0x00000021;   //Set the UART to run at 460800 baud
 
