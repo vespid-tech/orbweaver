@@ -61,7 +61,7 @@ int main(void)
 
     clocks_init();
     power_init();
-    //watchdog_init();
+    watchdog_init();
     leds_init();
     buttons_init();
     uart_init();
@@ -74,7 +74,7 @@ int main(void)
     while(true)
     {
         leds_service();
-        //watchdog_service();
+        watchdog_service();
         buttons_service();
         uart_service();
         spi_service();
