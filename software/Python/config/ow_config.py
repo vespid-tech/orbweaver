@@ -360,6 +360,40 @@ def radio_reset(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8):
     
     serial_port.close()
 
+
+def radio_test(serial_port: str, addr_src: c_uint8, addr_dest: c_uint8, new_addr: c_uint8):
+
+    serial_port = serial.Serial(port=serial_port, baudrate=SERIAL_BAUD, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=2, rtscts=True)
+    
+    serial_port.reset_input_buffer()
+    serial_port.reset_output_buffer()
+
+    send_cmd_serial(serial_port, addr_src, 255, system_cmd_t.uart_peers_cmd, bytes([addr_src]))
+    
+    test_passed = False
+
+    for i in range(3):
+
+        send_cmd_serial(serial_port, addr_src, addr_dest, system_cmd_t.echo_cmd, None)
+
+        header, param = recv_cmd_serial(serial_port)
+
+        if header is not None and header.command == system_cmd_t.echo_response_cmd:
+
+            print("Radio test PASSED.")
+            test_passed = True
+            break;
+
+        elif i < 2:
+            continue  # Retry if not successful
+
+        else:
+            print("Radio test FAILED.")
+
+    serial_port.close()
+
+    return test_passed
+    
     
 if __name__ == "__main__":
 
@@ -540,4 +574,3 @@ if __name__ == "__main__":
             case "8":
 
                 break;
-

@@ -24,6 +24,7 @@ from config.ow_config import (
     freq_band_set,
     radio_addr_set,
     radio_reset,
+    radio_test,
 )
 
 BITRATE_VALUES = {
@@ -230,15 +231,22 @@ class Configurator:
             side="left", padx=(4, 0)
         )
         
+        radio_actions = ttk.Frame(configuration)
+        radio_actions.grid(row=9, column=0, columnspan=5, pady=(12, 0), sticky="w")
         self.get_configuration_button = ttk.Button(
-            configuration, text="Get Configuration", command=self.get_configuration, width=18
+            radio_actions,
+            text="Get Configuration",
+            command=self.get_configuration,
+            width=18,
         )
-        self.get_configuration_button.grid(
-            row=9, column=0, padx=(0, 8), pady=(12, 0), sticky="w"
+        self.get_configuration_button.pack(side="left", padx=(0, 8))
+        self.test_radio_button = ttk.Button(
+            radio_actions, text="Test Radio", command=self.test_radio, width=18
         )
+        self.test_radio_button.pack(side="left", padx=(0, 8))
         ttk.Button(
-            configuration, text="Reset Radio", command=self.reset_radio
-        ).grid(row=9, column=1, padx=(0, 8), pady=(12, 0), sticky="w")
+            radio_actions, text="Reset Radio", command=self.reset_radio, width=18
+        ).pack(side="left", padx=(0, 8))
 
         self.region_changed()
 
@@ -580,6 +588,49 @@ class Configurator:
             self._run_with_gui_output,
             (radio_reset, com_port, source_address, radio_address),
         )
+
+    def test_radio(self):
+        try:
+            source_address = self.load_address.get()
+            radio_address = self.radio_address.get()
+        except tk.TclError:
+            messagebox.showerror("Radio test error", "Enter valid source and radio addresses.")
+            return
+
+        if not 1 <= source_address <= 254 or not 1 <= radio_address <= 255:
+            messagebox.showerror("Radio test error", "Enter valid source and radio addresses.")
+            return
+
+        com_port = self.com_port.get()
+        if not com_port:
+            messagebox.showerror("Radio test error", "Select a COM port first.")
+            return
+
+        self._start_operation(
+            self._run_radio_test,
+            (com_port, source_address, radio_address),
+        )
+
+    def _run_radio_test(self, com_port, source_address, radio_address):
+        try:
+            test_passed = radio_test(
+                com_port, source_address, radio_address, radio_address
+            )
+            error = None
+        except Exception as radio_test_error:
+            test_passed = False
+            error = radio_test_error
+
+        self.root.after(0, self._finish_radio_test, test_passed, error)
+
+    def _finish_radio_test(self, test_passed, error):
+        self._set_controls_busy(False)
+        if error is not None:
+            messagebox.showerror("Radio test failed", f"Radio test failed: {error}")
+        elif test_passed:
+            messagebox.showinfo("Radio test passed", "Radio test passed.")
+        else:
+            messagebox.showerror("Radio test failed", "Radio test failed.")
 
     def write_output(self, text):
         self.output.configure(state="normal")

@@ -16,11 +16,11 @@
        alt="Configurator GUI">
 </p>
 
-4) **Connect the Orbweaver to the PC via a USB cable**. PWR LED should illuminate indicating Orbwaever is powered. If Orbeaver firmware has not been loaded, LEDs 3, 2, and 1, should cycle on/off in that order. This indicates the Orbweaver bootloader is running. If Orbweaver firmware has previously been loaded, LED 3 will blink, and LEDs 1 and 2 should stay off. This indcates Orbweaver application is running.
-5) In the Configurator next to Com port: dropdown, **press the Refresh button**. The dropdown should populate the comport dropdown Orbweaver is using. **Make sure the comport in use is selected**.
-6) If the Orbweaver bootloader is running select **Load Mode: Bootloader**. If the Orbweaver application is running select **Load Mode: Application**. Refer to step 3 to determine which mode is active.
+4) **Connect the Orbweaver to the PC via a USB cable**. PWR LED should illuminate indicating Orbwaever is powered. If the Orbeaver bootloader is active, LEDs 3, 2, and 1, should cycle on/off in that order. If the Orbweaver application is active, LED 3 will blink, and LEDs 1 and 2 should stay off.
+5) In the Configurator next to Com port: dropdown, **press the Refresh button**. The dropdown should populate the comport dropdown Orbweaver is using. **Make sure the comport used by Orbweaver is selected**.
+6) **Select the appropriate Load mode:**. If the Orbweaver bootloader is active select Load Mode should be "Bootloader." If the Orbweaver application is active, Load Mode should be "Application." Refer to step 4 to determine which is active.
 7) **Click the Browse button** and browse to the Orbweaver binary downloaded in step 1.
-8) Click **"Load Binary"**. Loading should complete after several seconds. Once loading is complete, a load complete dialog box should pop up. **Press OK** on the Load Complete dialog box. The binary is now loaded.
+8) Click **"Load Binary"**. Loading should complete after several seconds. Once loading is complete, a load complete dialog box should pop up. **Press OK** on the Load Complete dialog box. LED 3 should now be flashing. LEDs 1 and 2 should be off. The binary is now loaded.
 9) If you wish to configure Orbweaver proceed to the Configuration section of this document.
 
 ## Configuration
@@ -31,7 +31,25 @@
 4) **Press "Set Frequency Band"**.
 5) Press "Get Configuration" and ensure the Output matches the settings you selected above.
 6) Orbweaver is now configured and ready for use.
+7) If you wish to send a test message to verify Orbweaver is functional, proceed to the Test section of this document.
 
-## Further Configuration and Networking
+## Test
 
-For more information on Orbweaver configuration (including the other configuration options), refer to the following document: [Orbweaver Networks] 
+1) **Connect antennas** to two different Orbweavers.
+2) **Connect one Orbweaver to your PC via USB**. 
+3) In the Configurator next to Com port: dropdown, **press the Refresh button**. The dropdown should populate the comport dropdown Orbweaver is using. **Make sure the comport used by Orbweaver is selected**.
+4) **Apply power to a second Orbweaver**. It may be connected to the same PC if no other source of power is available. **The two Orbweavers must have different addresses, and nethier address may match address as that displayed in  Source Address (1-254):**, which defaults to 254.
+5) **Using Radio Address (1-255): Select the address of the FIRST Orbweaver**.
+6) **Press "Test Radio"**. A dialog should pop up indicating whether the test passed or failed.
+7) **Using Radio Address (1-255): Select the address of the SECOND Orbweaver**.
+8) **Press "Test Radio"**. A dialog should pop up indicating whether the test passed or failed. If both tests passed, both your Orbweavers are capable of bi-direciton communication.
+
+## Help, further configuration, programming guide, and Orbweaver networking explained
+
+For troubleshooting communication issues refer to the following document:  [Orbweaver Troubleshooting](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_troubleshooting.md)
+
+For all other questions, concerns, etc., refer to the Orbweaver GitHub Q&A discussion:  [Orbweaver Q&A](https://github.com/vespid-tech/orbweaver/discussions/categories/q-a)
+
+For more information on how to use Orbweaver (including configuration options not covered in this guide), refer to the following document: [Orbweaver User Manual](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_user_manual.md)
+
+For information on writing communication software and integrating Orbweaver into your software application, refer to the following document: [Orbweaver Programming Guide](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_programming_guide.md)
