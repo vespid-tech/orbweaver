@@ -429,35 +429,35 @@ def load_via_serial(our_addr, radio_addr, bin_path, serial_port):
 
 if __name__ == "__main__":
 
-    # parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-    # parser.add_argument("-r", "--recv_address", type=byte_value, required=True, help="The address this script should use to receive messages (do not use an address that is currently in use)",)
+    parser.add_argument("-r", "--recv_address", type=byte_value, required=True, help="The address this script should use to receive messages (do not use an address that is currently in use)",)
 
-    # parser.add_argument("-a", "--radio_address", type=byte_value, required=True, help="The address of the radio (use 255 if the radio is unconfigured)",)
+    parser.add_argument("-a", "--radio_address", type=byte_value, required=True, help="The address of the radio (use 255 if the radio is unconfigured)",)
 
-    # parser.add_argument("-f", "--file", type=Path, required=True, help="Path to bin file",)
+    parser.add_argument("-f", "--file", type=Path, required=True, help="Path to bin file",)
 
-    # parser.add_argument("-p", "--port", type=str, required=True, help="COM port the radio is connected to",)
+    parser.add_argument("-p", "--port", type=str, required=True, help="COM port the radio is connected to",)
 
-    # args = parser.parse_args()
+    args = parser.parse_args()
 
-    # our_addr = args.recv_address
-    # radio_addr = args.radio_address
-    # bin_path = args.file
-    # serial_port = args.port
+    our_addr = args.recv_address
+    radio_addr = args.radio_address
+    bin_path = args.file
+    serial_port = args.port
 
-    # if not 1 <= radio_addr <= 0xFF:
+    if not 1 <= radio_addr <= 0xFF:
 
-    #     print("Error: Radio address invalid.")
-    #     sys.exit(1)  
+        print("Error: Radio address invalid.")
+        sys.exit(1)  
 
-    our_addr = 250
+    # our_addr = 250
 
-    radio_addr = 255
+    # radio_addr = 255
 
-    bin_path = Path(r"C:\\Projects\\bridge_0\\public\\firmware\\orbweaver\\Debug\\orbweaver_d810f2a-dirty.bin")
+    # bin_path = Path(r"C:\\Projects\\bridge_0\\public\\firmware\\orbweaver\\Debug\\orbweaver_d810f2a-dirty.bin")
 
-    # serial_port = "/dev/ttyACM0"
-    serial_port = "COM19"
+    # # serial_port = "/dev/ttyACM0"
+    # serial_port = "COM19"
 
     load_via_serial(our_addr, radio_addr, bin_path, serial_port)
