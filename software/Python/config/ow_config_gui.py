@@ -2,10 +2,15 @@ from pathlib import Path
 from contextlib import redirect_stderr, redirect_stdout
 import random
 import secrets
+import sys
 import threading
 import tkinter as tk
 from ctypes import sizeof
 from tkinter import filedialog, messagebox, ttk
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import serial
 import serial.tools.list_ports
 

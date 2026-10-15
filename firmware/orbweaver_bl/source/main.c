@@ -43,7 +43,7 @@ int main(void)
 
     HWREG(NVIC_VTABLE) = 0x00000000;    //Point to our static interrupt vector table
 
-    watchdog_init();
+    //watchdog_init();
     clocks_init();
     power_init();
     leds_init();
@@ -59,7 +59,7 @@ int main(void)
     {
         uart_service();
         spi_service();
-        watchdog_feed();
+        //watchdog_feed();
 
         if ((systick - led_start_time) >= 500)
         {
