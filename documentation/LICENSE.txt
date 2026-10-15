@@ -1,0 +1,9 @@
+Copyright © 2026 Vespid
+
+Unless otherwise noted, the documentation for this project, is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+
+To view a copy of this license, visit:
+
+https://creativecommons.org/licenses/by-nc/4.0/
+
+This license applies to documentation only. Software, firmware, and hardware design files are licensed separately. Company names, product names, logos, trademarks, and service marks (including Vespid, Orbweaver, and associated logos) referenced in this documentation belong to their respective owners and are not licensed under this Creative Commons license. 
