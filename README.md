@@ -10,7 +10,7 @@ Orbweaver is a Sub-GHz HAT+ designed for the Raspberry Pi 5. When loaded with th
 * **Hardware (`/hardware`)**: All hardware licensed under **CERN Open Hardware Licence Version 2 – Strongly Reciprocal** (`CERN-OHL-S-2.0`).
 * **Firmware (`/firmware`)**: All firmware Licensed under the **GNU General Public License v3.0** (`GPL-3.0-only`).
 * **Software (`/software`)**: All software Licensed under the **GNU General Public License v3.0** (`GPL-3.0-only`).
-* **Documentation (`/documents`)**: All documentation (except the trademarks mentioned below) Licensed under the **Creative Commons Attribution-ShareAlike 4.0 International** (`CC BY-SA 4.0`).
+* **Documentation (`/documents`)**: All documentation (except the trademarks mentioned below) Licensed under the **Creative Commons Attribution-NonCommercial 4.0 International** (`CC BY-NC 4.0`).
 * The full text of these licenses can be found in this repository in the hardware, software, and firmware folders they apply to.
 
 ### Non-open Source Components
