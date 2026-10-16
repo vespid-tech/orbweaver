@@ -1,10 +1,18 @@
+## Table of Contents
+- [Introduction](#introduction)
+- [Configuration with Windows](#configuration-with-windows)
+- [Configuration with Raspberry Pi](#configuration-with-raspberry-pi)
+- [Help, further configuration, programming guide, etc.](#help-further-configuration-programming-guide-etc)
+
+# Introduction
+
 # Configuration with Windows
 
 ## What you'll need
 1) Orbweaver
 2) desktop or laptop computer running Windows
-2) USB cable
-3) antenna
+3) USB cable
+4) antenna
 
 ## Loading Firmware
 1) Download the latest Orbweaver binary: [Orbweaver binary](https://github.com/vespid-tech/orbweaver/releases/download/orbweaver-v0.0.1/orbweaver_v0.0.1.d810f2a.bin).
@@ -16,15 +24,13 @@
        alt="Configurator GUI">
 </p>
 
-4) **Connect the Orbweaver to the PC via a USB cable**. PWR LED should illuminate indicating Orbwaever is powered. If the Orbeaver bootloader is active, LEDs 3, 2, and 1, should cycle on/off in that order. If the Orbweaver application is active, LED 3 will blink, and LEDs 1 and 2 should stay off.
+4) **Connect the Orbweaver to the PC via a USB cable**. PWR LED should illuminate indicating Orbwaever is powered. LEDs 3, 2, and 1, should cycle on/off in that order indicating the bootloader is active.
 5) In the Configurator next to Com port: dropdown, **press the Refresh button**. The dropdown should populate the comport dropdown Orbweaver is using. **Make sure the comport used by Orbweaver is selected**.
-6) **Select the appropriate Load mode:**. If the Orbweaver bootloader is active select Load Mode should be "Bootloader." If the Orbweaver application is active, Load Mode should be "Application." Refer to step 4 to determine which is active.
-7) **Click the Browse button** and browse to the Orbweaver binary downloaded in step 1.
-8) Click **"Load Binary"**. Loading should complete after several seconds. Once loading is complete, a load complete dialog box should pop up. **Press OK** on the Load Complete dialog box. LED 3 should now be flashing. LEDs 1 and 2 should be off. The binary is now loaded.
+6) **Click the Browse button** and browse to the Orbweaver binary downloaded in step 1.
+7) Click **"Load Binary"**. Loading should complete after several seconds. Once loading is complete, a load complete dialog box should pop up. **Press OK** on the Load Complete dialog box. LED 3 should now be flashing, and LEDs 1 and 2 should be off indicating the application is active. The binary is now loaded.
 9) If you wish to configure Orbweaver proceed to the Configuration section of this document.
 
 ## Configuration
-
 1) In the Configurator, assign an address to the Orbweaver **enter an address in the Address (1-254): box**. We recommend using address 1 as the first Orbweaver address in your network. The second Orbweaver should be address 2, and so on. **Do not use the same address as that displayed in  Source Address (1-254):**, which defaults to 254.
 2) **Press "Set New Address"**.
 3) **Select the Frequency Band** you plan to operate Orbweaver in. In North and South America, use ITU region 2. In Europe, Africa, and West Asia, use ITU region 1.
@@ -34,17 +40,29 @@
 7) If you wish to send a test message to verify Orbweaver is functional, proceed to the Test section of this document.
 
 ## Test
-
 1) **Connect antennas** to two different Orbweavers.
 2) **Connect one Orbweaver to your PC via USB**. 
 3) In the Configurator next to Com port: dropdown, **press the Refresh button**. The dropdown should populate the comport dropdown Orbweaver is using. **Make sure the comport used by Orbweaver is selected**.
-4) **Apply power to a second Orbweaver**. It may be connected to the same PC if no other source of power is available. **The two Orbweavers must have different addresses, and nethier address may match address as that displayed in  Source Address (1-254):**, which defaults to 254.
+4) **Apply power to a second Orbweaver**. It may be connected to the same PC if no other source of power is available. **The two Orbweavers must have different addresses, and neither address should match the addressed displayed in Source Address (1-254):**, which defaults to 254.
 5) **Using Radio Address (1-255): Select the address of the FIRST Orbweaver**.
 6) **Press "Test Radio"**. A dialog should pop up indicating whether the test passed or failed.
 7) **Using Radio Address (1-255): Select the address of the SECOND Orbweaver**.
 8) **Press "Test Radio"**. A dialog should pop up indicating whether the test passed or failed. If both tests passed, both your Orbweavers are capable of bi-direciton communication.
 
-## Help, further configuration, programming guide, and Orbweaver networking explained
+# Configuration with Raspberry Pi
+
+## What you'll need
+1) Orbweaver
+2) Raspberry Pi 5 running Linux
+3) antenna
+
+## Loading Firmware
+
+## Configuration
+
+## Test
+
+# Help, further configuration, programming guide, etc.
 
 For troubleshooting communication issues refer to the following document:  [Orbweaver Troubleshooting](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_troubleshooting.md)
 
