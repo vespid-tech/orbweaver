@@ -64,31 +64,25 @@ Pressing and releasing buttons 1 and 2 switches the states of LEDs 1 and 2 respe
 Pressing and holding both buttons for 3.1 seconds activates the firmware bootloader. Cycle power or reset Orbweaver to active the application again.
 
 # Programming, Bootloading, and OTA updates
-Orbweaver contains two bootloaders: A firmware bootloader and a ROM bootloader. It also contains two areas of flash: Program flash and external flash.
+Orbweaver contains two bootloaders: A firmware bootloader and a ROM bootloader. 
 
 ### Firmware Bootloader
-The purpose of the firmware bootloader is to load an application into Orbweaver program memory either because there isn't one, or the current one needs to be updated. This bootloader can only communicate via USB or SPI. It cannot use the radio, so the initial application loading must be performed via USB or SPI. Orbweaver ships with the firmware bootloader already programmed, but without application firmware. So when a fresh from the factory Orbweaver is initially powered on, this bootloader should be active. Once the application firmware is loaded, the user should never have to interact directly with this bootloader (see the Orbweaver Quick Start Guide for instruction on loading and configuring Orbweaver). Orbweavers may be updated over-the-air using the radio once they have an active application.
+The firmware and ROM bootloaders can only communicate via USB or SPI. They cannot use the radio. Orbweaver ships with the firmware bootloader already programmed, but without application firmware. So when a fresh from the factory Orbweaver is initially powered on, this bootloader should be active, and the application must be loaded via USB or SPI. Once the application firmware is loaded, the application can accept over-the-air updates using the radio. See the Orbweaver Quick Start Guide for instruction on loading and configuring Orbweaver.
 
 All firmware updating via the firmware bootloader or application are fail-safe. Even if power is removed at the worst possible time during an update, Orbweaver should be able to recover and resume normal operation once power is restored.
 
-If a user wants to load an application on an Orbweaver that contains an application that is not compatible with the Configurator that is being used, both buttons should be held for 1.3 seconds to activate the Orbweaver's firmware bootloader. The firmware bootloader can then be used to update the incompatible application.
+If an Orbweaver is in a state that prevents the application from accepting an update (e.g. the configurator version being used is imcompatible with the active application), the firmware bootloader may be activated by holding both Orbweaver buttons for 1.3 seconds. The firmware bootloader can then be used to update the application.
 
 ### ROM Bootloader
-The ROM bootloader exists as a fallback to the firmware bootloader. The ROM bootloader may be activated in two ways: One, if Orbweaver is mounted on a Raspberry Pi, the boot pin can be held low while the reset pin is pulled low then release. Two, the boot throughholes can be shorted together while power is cycled. Once the ROM bootloader is active, only PWR LED should be illuminated.
+The ROM bootloader exists as a fallback to the firmware bootloader. The ROM bootloader may be activated in two ways: One, if Orbweaver is mounted on a Raspberry Pi, the boot pin can be held low while the reset pin is pulled low then released. Two, the PCB boot throughholes can be shorted together while power is cycled. Once the ROM bootloader is active, only the PWR LED should be illuminated.
 
-The ROM bootloader can be used to update the firmware bootloader (e.g. if Orbweaver program flash has become corrupted). Note: If done improperly, loading firmware with the ROM bootloader may result in adverse outcomes up to and including bricking Orbweaver.
+The ROM bootloader may be used to update the firmware bootloader. Note: If not performed properly, loading firmware with the ROM bootloader may result in adverse outcomes up to and including bricking Orbweaver.
 
 ### JTAG
-The two JTAG connectors are explained in the Orbweaver Interfaces section of this document. They may be used along with an IDE for developing and debugging firmware. They may also be used as a last resort to recover corrupted devices if the ROM bootloader fails to do so.
-
-### Program Flash
-Program flash is physically located inside the CC1310. It is where the firmware bootloader, current application, and current application metadata reside. The firmware bootloader, ROM bootloader, and JTAG programmers can write to program flash. The application cannot write to program flash.
-
-### External Flash
-External flash is physically located on Orbweaver, but it is seperate from the CC1310. External flash is used to store Orbweaver configuration, a backup application binary, application metadata, and a bootloader command. The firmware bootloader and application can write to external flash. The ROM bootloader and JTAG programmers cannot write to external flash. The back-up application stored in external flash allows Orbweaver to updates to be fail-safe.
+The two JTAG connectors are explained in the Orbweaver Interfaces section of this document. They may be used along with a programmer and IDE for developing and debugging firmware.  They may also be used along with a programmer for erasing and programming the firmware bootloader and application using Texas Instruments SmartRF Programmer. Note: Using the JTAG connector to program and erase Orbweaver may result in adverse outcomes up to and including bricking Orbweaver.
 
 # Orbweaver Configurator
-The Configurator is used to configure Orbweaver and update Orbweaver application and bootloader firmware. A desktop version may be downloaded from the Orbweaver GitHub repo: [Orbweaver Releases](https://github.com/vespid-tech/orbweaver/releases). A Python CLI version can be found in the repo: [config](https://github.com/vespid-tech/orbweaver/tree/main/software/Python/config). After cloning the repo run the script "ow_config.py" to run the CLI version. Both versions contain the same functionality.
+The Configurator is used to configure Orbweaver and update Orbweaver application and bootloader firmware. Orbweaver Configurator is treated as a node on your network, therefore it must be assigned a unique address as described below in the Configurator Address section. A desktop version may be downloaded from the Orbweaver GitHub repo: [Orbweaver Releases](https://github.com/vespid-tech/orbweaver/releases). A Python CLI version can be found in the repo: [config](https://github.com/vespid-tech/orbweaver/tree/main/software/Python/config). Using the CLI version is detailed in the "CLI Updates and Configuration" section of this document. After cloning the repo run the script "ow_config.py" to run the CLI version. Both versions contain the same functionality.
 
 The following shows the desktop version:
 <p align="center">
@@ -96,21 +90,84 @@ The following shows the desktop version:
        alt="Configurator GUI">
 </p>
 
+### Configurator Address
+This is the address used by Orbweaver Configurator during update operations.
+
+### Radio Address
+This is the address of the target Orbweaver that is being updated or configured. If the target Orbweaver is directly connected via USB, 255 may be used regardless of the Orbweavers actual address. Any Orbweaver may be used to send updates over-the-air to remote Orbweavers on the same network. In that case, use the address of the remote Orbweaver. The USB connected Orbweaver will relay messages back and forth between the remote Orbweaver and the Configurator.
+
+### COM port
+The comport used to communicate to Orbweaver. Pressing refresh will cause the Configurator to search for connected Orbweavers and populate the dropdown control with the results of the search.
+
+## Load
+The controls in this section are used to load new application firmware into Orbweaver. they may also be used to load a new firmware bootloader using the ROM bootloader.
+
+### Load Mode
+Select Bootloader if the target Orbweaver has the bootloader active. Select Application if the target Orbweaver has an active application. Select ROM bootloader if the ROM bootloader is active. Note: over-the-air updates can only be sent to remote Orbweavers that have the application active. Orbweavers connected via USB may be updates with any of the three methods as necessary.
+
+### Binary File Path
+The path of the binary to load into the target Orbweaver.
+
+Pressing "Load Binary" starts the loading process.
+
+## Configuration
+An Orbweaver will only respond to the controls in this section if an application is running on the Orbweaver. If either bootloader is active, the target Orbweaver will not respond to any of these controls.
+
+### Address
+The address to assign to the target Orbweaver. Pressing "Set New Address" sets the address. Note: If "Orbweaver Address" is set to the Orbweaver address instead of 255, and a new address is assigned, the Orbweaver will stop responding until "Radio Address" is set to the new address.
+
+### Bitrate
+The bitrate to assign to the target Orbweaver. All Orbweaver on the same network must have the same bitrate. Lower bitrates will generally allow for longer range communication but less bandwidth and vice versa. Pressing "Set Bitrate" sets the radio bitrate.
+
+### Cipher Key
+This is the key used to encrypt and decrypt messages sent via RF when encryption is enabled. All Orbweavers on the same network must use the same Cipher key. There is no command to retrieve a cipher key from an Orbweaver. It is up to the user to save the cipher key, and make sure the same key is loaded into every Orbweaver. Pressing "Set Cipher Key" will load the key, but it will not be used until encryption is enabled. Pressing the "Encryption Enabled/Encryption Disabled" button will toggle encryption.
+
+### Frequency Band
+In order to comply to local regulations, this should be set to reflect the ITU band the Orbweaver network will operate in. ITU Region 1 encompasses Europe, Africa, and West Asia. ITU Region 2 encompasses North and South America. For all other regions, select a band and Default Channel that is appropriate for the region. See the "Disclaimer and Legal Notice" section of this document for more.
+
+"Available Channels" displays the channels available in the selected region, and "Default Channel" selects the channel that the Orbweaver will use by default (i.e. until it is changed by software or frequency hopping is enabled). The default channel frequency is displayed next to the "Default Channel." Pressing "Set Frequency Band" Sets the frequency band and default channel.
+
+### Get Configuration
+Retrieves the current Configuration.
+
+### Test Orbweaver
+Sends a test message to the radio. If a response is received it means radio communication is nominally functional. It does not perform a comprehensive system test. Test Radio will only work if the target Orbweaver has an application active.
+
+### Reset Orbweaver
+Sends a reset command to the target Orbweaver. After an Orbweaver is loaded and configured, it may be reset. As a final check, the configuration may be retrieved and verified against what was set. If the received configuration matches what was sent, it indicates the proper firmware was loaded and the configuration was successfully saved in flash memeory.
+
+# CLI Updates and Configuration
 
 # Orbweaver Networks Explained
-Peer-to-Peer, Mobile, Ad Hoc, Hybrid, Mesh Network
-## Peer-to-Peer Mesh Networks
+Orbweavers are designed to allow anyone to set-up a peer-to-peer, ad Hoc, mobile, hybrid, mesh network. Here's what those term mean:
+
+peer-to-peer: Every node can request and provide data. There is no designated client or server. Every node can function as either.  
+ad hoc: Any node may communicate with any other node in range. No dedicated routers or switches exist. 
+mobile: Nodes may move relative to each other or all together while communicating.
+hybrid: The individual nodes on a network may communicate using different technologies. In the case of Orbweaver networks they may use RF, USB, or SPI.
+mesh: Each node in the network is capable of routing messages to enable nodes that are out of range of each other to communicate.
+
+For example, supposed you have a Raspberry Pi collecting data somewhere out of range of any WiFi network (or for some reason you are unable or unwilling to use WiFi). You want to access the data on that Rasperry Pi from a desktop some distance away. you may attach one Orbweaver to the Raspberry Pi and another to the desktop. The desktop and Raspberry Pi can now communicate via the Orbweaver network. Now supposed the Raspberry Pi is several kilometers away, too far for the Orbweavers to reach. A third (or as many as necessary) Orbweavers may be placed between the Raspberry Pi and desktop. The extra Orbweavers will forward the messages between the desktop and Respberry Pi.
+
+Another example, you want to set-up secure communication between several Android mobile devices spread over a fairly large area without using existing cellular infrastructure. If each mobile device is connected to an Orbweaver, and an appropriate application is loaded on each mobile device, all the mobile devices will be able to communicate to one another on their own secure network.
 
 ## Orbweaver Network Topology
 ### Node
+A node is any device (real or virtual) that is connected to an Orbweaver network. It may be an Orbweaver, an Android mobile device, a desktop (or software running on a desktop), or anything else equiped with a compatible USB serial port driver or capable of communicating via SPI that can send and receive properly formated messages.
 ### Subnet
+A subnet consists of an Orbweaver, and all nodes connected to the Orbweaver via USB or SPI. Only one node can be physically connected via SPI one one via USB, but each of those devices may have up to 5 additional nodes connected to (or running on) them that the Orbweaver can route message to and from, so a single subnet may contain up to 13 nodes.
 ### Network
+All of the nodes on all of the subnets capable of communicating with each other. An Orbweaver can only be a part of a single network. However, other computers (like desktops and Raspberry Pis) may be connected to more than one network at a time. For instance, if a Raspberry Pi has an Orbweaver mounted and a second connected via USB. The two Orbweaver can be node on two different networks. The Raspberry Pi can communicate to both. In this way networks may be chained together allowing the address space to be extended beyond 254 nodes.
 ### Addresses
+Every node on a network must have a unique address. There are 255 addresses available (1-255). Address 0 is invalid, and cannot be used by any node. Address 255 is the broadcast address. Messages sent to this address will be received and processed by any node that receives it. All other numbers (1-254) may be used as node addresses. By convention, Orbweavers start with address 1 and count up. All non-Orbweaver nodes start at address 254 and count down. For instance, if you have a network consisting of 3 Orbweavers, a Raspberry Pi, and a desktop running a communication script and the Orbweaver Configurator. The Orbweavers may use addresses 1, 2, and 3. The Raspberry Pi may use address 254. The desktop communication script may use address 253, and the Orbweaver Configurator that is also running on the desktop may use address 252.
 
 ## Messaging 
-### Forwarding and TTL
+All Orbweaver network communication is packet based. That is, all messages sent between nodes must be sent as properly formated packets called "system commands." For more on messaging see the Orbweaver Programming Guide.
 
 # Frequency Bands
+Orbeaver radios operate in one of two unlicensed ISM bands. ITU region 1 (Europe, Africa, and West Asian) has 15 channels ranging from 863 MHz to 870 MHz. ITU Region 2 (North and South America) has 53 channels ranging from 902 MHz to 928 MHz. Many if not most other regions of the world have unlicense bands that overlap with the frequencies used by ITU region 1 or 2, so a default channel from those bands may be used. If frequency hopping is enabled, the Orbweavers will hop through all the available channels in the select ITU region in random order.
+
+See the Disclaimer and Legal Notice section of this document for more on this topic.
 
 # Encryption and Security
 ### Key Storage
