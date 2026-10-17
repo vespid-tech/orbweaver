@@ -22,6 +22,8 @@ There are two ways Orbweaver may be powered. If it is mounted on a Raspberry Pi 
 
 Any modern cell phone power adapter (or similar power source) should be capable of powering Orbweaver. However, a power supply designed for use with a Raspberry Pi is recommended, especially if the Raspberry Pi and Orbweaver are being powered at the same time. Orbweaver may also be powered via a USB connector on a Desktop, Laptop, or Android mobile device. We can't vouch for every device in the world, but most modern devices should be capable of powering Orbweaver. A portable cell phone charger should also work. 
 
+Orbweaver is designed to optimize low latency response and ease of use, not power savings. The Orbweaver processor and trasciever are both always active as long as power is applied. RF Transmissions are always performed at maximum power.
+
 Generally, Orbweaver may be safely powered and unpowered with no special shutdown proceedure. That is, you can just plug it in and unplug it without risk. However, the following two exceptions exist:
 
 One, when mounting Orbweaver on a Raspberry Pi, make sure both Orbweaver and the Raspberry Pi are unpowered. Orbweaver is designed to resist damage from stray current spikes on the the 2x20 pin connector (up to a point), so it will likely survive, but the Raspberry Pi may or may not.
@@ -170,9 +172,19 @@ Orbeaver radios operate in one of two unlicensed ISM bands. ITU region 1 (Europe
 See the Disclaimer and Legal Notice section of this document for more on this topic.
 
 # Encryption and Security
-### Key Storage
+Orbweaver uses AES-128 encryption for radio messages. Cracking a message encrypted with AES-128 with a properly randomized cipher key is considered infeasible with modern computer technology. It may be possible to crack AES-128 encrypted messages in the future using quantum computer (if quantum compters are ever successfully developed). Orbweaver encryption is performed with true random numbers. additional authorization data integrity checking is perfomred to prevent tampering of routing and addressing data. A 13 byte nonce is used to precent replay attacks.
+
+Wired communication via USB and SPI is never encrypted. This means nodes that are not Orbweavers do not need cipher keys or encryption algorythms. This also means if an encryption key is lost, an Orbweaver can still be communicated with via USB or SPI (e.g. in order to turn off encryption or configure a new key).
+
+Every Orbweaver on an encrypted network must have the same cipher key configured. The cipher key is stored on Orbweaver in plain text. There is no native command that can retrieve the cipher key. However, a moderately saphisticated attacker that gains physical access to an Orbweaver is capable of retrieving the key by writing and loading custom firmware on Orbweaver. So if an Orbweaver is physically lost or compromised, its cipher key should be considered compromised.
 
 # Frequency Hopping
+In order to reduce latency and increase bandwidth, Orbweaver uses a unique frequency hopping algorithm. When frequency hopping in enabled, every Orbweaver in a network will randomly hop through every channel available based on the ITU region selected. Each channel is dwelled on for 400 ms. However, if a message is in the process of being received when a channel hop is due, the channel hop will be delayed until the entire message is received. This helps reduce latency by allowing Orbweavers to send long messages as soon as possible even if the network is about to hop to the next frequency. 
+
+### Potential Frequency Hopping Issues
+Before frequency hopping is enabled, every Orbweaver in a network must have the same channel map saved. Any Orbweaver may share a channel map with every Orbweaver on the network. Any Orbweaver that does not have the same channel map will not be able to maintain synchronization with the other Orbweavers in the network. When an Orbweaver initiates frequency hopping, a synchronization command is broadcast. Any Orbweaver that fails to receive this command will not begin hopping. However, synchronization commands are sent every 5-10 seconds. Eventually the radio should receive a synchronization command on what channel is is listening to, and assuming it possesses the same channel map, it will then be synchronized. However, since synchrinization timing is random, it is theoretically possbile (through highly unlikely) that synchronization will never happen. See the Orbweaver Programming Guide for more information about how to initiate frequency hopping.
+
+
 
 # Bandwidth, Bitrate, and Data Throughput
 
