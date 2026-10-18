@@ -12,7 +12,7 @@
 1) Orbweaver
 2) desktop or laptop computer running Windows
 3) USB cable
-4) antenna
+4) antenna (if you want to want to test the radio)
 
 ## Loading Firmware
 1) Download the latest Orbweaver binary: [Orbweaver binary](https://github.com/vespid-tech/orbweaver/releases/download/orbweaver-v0.0.1/orbweaver_v0.0.1.d810f2a.bin).
@@ -54,13 +54,28 @@
 ## What you'll need
 1) Orbweaver
 2) Raspberry Pi 5 running Linux
-3) antenna
+3) antenna (if you want to want to test the radio)
 
 ## Loading Firmware
+1) **With power off, mount the Orbweaver on the Raspberry Pi**.
+2) **Power on the Raspberry Pi.** Orbweaver LEDs 3, 2, 1 should start cycling in that order indicating the firmware bootloader is active.
+3) **Download the latest Orbweaver binary to the Raspberry Pi**: [Orbweaver binary](https://github.com/vespid-tech/orbweaver/releases/download/orbweaver-v0.0.1/orbweaver_v0.0.1.d810f2a.bin).
+4) **Clone or downloader the Orbweaver repo**: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver)
+5) **Navigate to the /orbweaver/software/Python/config folder**.
+6) **Run the load_via_bl_spi.py script**. Use the path to the firmware binary downloaded in step 3. For instance:
 
-## Configuration
+$ python load_via_bl_spi.py -f [path to application binary] 
 
-## Test
+If Orbweaver is connected via USB, use the load_via_bl_usb.py script, and provide a comport as well as a file path as follows:
+
+$ python load_via_bl_usb.py -p [comport] -f [path to application binary] 
+
+7) If you wish to configure Orbweaver proceed to the Configuration section of this document.
+
+## Configuration and Test
+1) **Navigate to the /orbweaver/software/Python/config folder** if you aren't already there.
+6) **Run the ow_config.py script**.  
+The ow_config has the same options and functionality as the desktop Configurator, so please refer to the Desktop Configuration section in this document for configuration and test instructions.
 
 # Help, further configuration, programming guide, etc.
 

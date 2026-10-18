@@ -84,7 +84,7 @@ The ROM bootloader may be used to update the firmware bootloader. Note: If not p
 The two JTAG connectors are explained in the Orbweaver Interfaces section of this document. They may be used along with a programmer and IDE for developing and debugging firmware.  They may also be used along with a programmer for erasing and programming the firmware bootloader and application using Texas Instruments SmartRF Programmer. Note: Using the JTAG connector to program and erase Orbweaver may result in adverse outcomes up to and including bricking Orbweaver.
 
 # Orbweaver Configurator
-The Configurator is used to configure Orbweaver and update Orbweaver application and bootloader firmware. Orbweaver Configurator is treated as a node on your network, therefore it must be assigned a unique address as described below in the Configurator Address section. A desktop version may be downloaded from the Orbweaver GitHub repo: [Orbweaver Releases](https://github.com/vespid-tech/orbweaver/releases). A Python CLI version can be found in the repo: [config](https://github.com/vespid-tech/orbweaver/tree/main/software/Python/config). Using the CLI version is detailed in the "CLI Updates and Configuration" section of this document. After cloning the repo run the script "ow_config.py" to run the CLI version. Both versions contain the same functionality.
+The Configurator is used to configure Orbweaver and update Orbweaver application and bootloader firmware. Orbweaver Configurator is treated as a node on your network, therefore it must be assigned a unique address as described below in the Configurator Address section. A desktop version may be downloaded from the Orbweaver GitHub repo: [Orbweaver Releases](https://github.com/vespid-tech/orbweaver/releases). Configuration using the CLI version is detailed in the "CLI Updates and Configuration" section of this document. After cloning the repo run the script "ow_config.py" to run the CLI version. Both versions contain the same functionality.
 
 The following shows the desktop version:
 <p align="center">
@@ -139,6 +139,13 @@ Sends a test message to the radio. If a response is received it means radio comm
 Sends a reset command to the target Orbweaver. After an Orbweaver is loaded and configured, it may be reset. As a final check, the configuration may be retrieved and verified against what was set. If the received configuration matches what was sent, it indicates the proper firmware was loaded and the configuration was successfully saved in flash memeory.
 
 # CLI Updates and Configuration
+There are two ways to load and configure Orbweaver via a CLI: USB and SPI. If using a Raspberry Pi with an Orbweaver mounted, SPI may be used. In either case, Python scripts are available in the Orbweaver GitHub for both loading firmware and configuration. You can find the GitHub here: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver). The loading and configuration scripts are in the folder orbweaver/software/Python/config.
+
+Each of the loading script names starts with the prefix "load_via_". The next part of the name indicates the state of the Orbweaver you are trying to load. If the firmware bootloader is active, you will want to use one of the "bl" scripts. If the application is active, you will want to use one of the "app" scripts. And if the ROM bootloader is active, you will want to use one of the "rombl" scripts. The next part of the name indicates how Orbweaver is connected. if Orbweaver is connect via SPI, use a "spi" script. If it is connect via USB, use a "usb" script. So if you have a new Orbweaver, the firmware bootloader is active, and it is mounted on a Raspberry Pi, use the "load_via_bl_spi.py" script. If the Orbweaver has the application active, and it is connected via USB, use the "load_via_app_usb.py" script.
+
+Over-the-air updates may be sent to remote Orbweavers via a locally connected Orbweaver. In that case, the locally connected Orbweaver must have the application active. Use one of the app scripts with the address of the remote Orbweaver as the Orbweaver address parameter.
+
+For configuration, use the ow_config.py script. It contains the same functionality and options the desktop version. See the Orbweaver Configurator section of this document for details on the various options.
 
 # Orbweaver Networks Explained
 Orbweavers are designed to allow anyone to set-up a peer-to-peer, ad Hoc, mobile, hybrid, mesh network. Here's what those term mean:
