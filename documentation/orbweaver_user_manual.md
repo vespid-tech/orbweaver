@@ -1,7 +1,19 @@
 # Table of Contents
 - [Introduction](#introduction)
-- [Orbweaver Networks Explained](#orbweaver-networks-explained)
-- [Help, programming guide, etc.](#help-programming-guide-etc)
+- [Power](#power)
+- [Interfaces](#interfaces) 
+- [Firmware Updating](#firmware-updating)
+- [Firmware Loading and Configuration via the Desktop](#firmware-loading-and-configuration-via-the-desktop)
+- [Firmware Loading and Configuration via CLI](#firmware-loading-and-configuration-via-cli)
+- [Orbweaver Networks](#orbweaver-networks)
+- [Frequency Bands](#frequency-bands)
+- [Encryption and Security](#encryption-and-security)
+- [Frequency Hopping](#frequency-hopping)
+- [Bandwidth, Bitrate, and Data Throughput](#bandwidth-bitrate-and-data-throughput)
+- [Communication Range](#communication-range)
+- [Mounting and Encasing](#mounting-and-encasing)
+- [Help, Further Documentation, etc.](#help-further-documentation-etc)
+- [Disclaimer, Licenses, and Legal Notice](#disclaimer-licenses-and-legal-notice)
 
 # Introduction
 Orbweaver is an open source HAT+ designed to mount on a Raspberry Pi 5. It is based around a Texas Instruments CC1310. It allows user to set-up secure wireless networks using desktops, laptops, Amdroid-based mobile devices, and Raspberry Pis without relying on existing networks. Orbweaver comes equipped with a debug header, so end users may write their own firmware or use Orbweaver as an alternative to a Texas Instruments CC1310 Eval Kit when evaluating the CC1310.
@@ -30,7 +42,7 @@ One, when mounting Orbweaver on a Raspberry Pi, make sure both Orbweaver and the
 
 Two, during loading and configuration, the Orbweaver onboard flash memory is written. Losing power during these operations may result in corrupting the flash. While this might result in a loss of configuration or even a loss of the current application firmware, it should not result in anything unrecoverable. That is, it should not be possible to brick the device even if power is removed at the worst possible time, but you might have to reload the firmware and reconfigure the device. Within 20-40 milliseconds or so of the device being loaded and/or configured, power can safely be removed at any time with no risk of memory corruption.
 
-# Orbweaver Interfaces
+# Interfaces
 Orbweaver contains 5 connectors (one of which is unpopulated), 4 LEDs and two buttons.
 
 ### USB Port
@@ -65,7 +77,7 @@ LEDs 1 and 2 will flash to indicate various application update and bootloading o
 Pressing and releasing buttons 1 and 2 switches the states of LEDs 1 and 2 respective.
 Pressing and holding both buttons for 3.1 seconds activates the firmware bootloader. Cycle power or reset Orbweaver to active the application again.
 
-# Programming, Bootloading, and OTA updates
+# Firmware Updating
 Orbweaver contains two bootloaders: A firmware bootloader and a ROM bootloader. 
 
 ### Firmware Bootloader
@@ -83,7 +95,7 @@ The ROM bootloader may be used to update the firmware bootloader. Note: If not p
 ### JTAG
 The two JTAG connectors are explained in the Orbweaver Interfaces section of this document. They may be used along with a programmer and IDE for developing and debugging firmware.  They may also be used along with a programmer for erasing and programming the firmware bootloader and application using Texas Instruments SmartRF Programmer. Note: Using the JTAG connector to program and erase Orbweaver may result in adverse outcomes up to and including bricking Orbweaver.
 
-# Orbweaver Configurator
+# Firmware Loading and Configuration via the Desktop
 The Configurator is used to configure Orbweaver and update Orbweaver application and bootloader firmware. Orbweaver Configurator is treated as a node on your network, therefore it must be assigned a unique address as described below in the Configurator Address section. A desktop version may be downloaded from the Orbweaver GitHub repo: [Orbweaver Releases](https://github.com/vespid-tech/orbweaver/releases). Configuration using the CLI version is detailed in the "CLI Updates and Configuration" section of this document. After cloning the repo run the script "ow_config.py" to run the CLI version. Both versions contain the same functionality.
 
 The following shows the desktop version:
@@ -138,7 +150,7 @@ Sends a test message to the radio. If a response is received it means radio comm
 ### Reset Orbweaver
 Sends a reset command to the target Orbweaver. After an Orbweaver is loaded and configured, it may be reset. As a final check, the configuration may be retrieved and verified against what was set. If the received configuration matches what was sent, it indicates the proper firmware was loaded and the configuration was successfully saved in flash memeory.
 
-# CLI Updates and Configuration
+# Firmware Loading and Configuration via CLI
 There are two ways to load and configure Orbweaver via a CLI: USB and SPI. If using a Raspberry Pi with an Orbweaver mounted, SPI may be used. In either case, Python scripts are available in the Orbweaver GitHub for both loading firmware and configuration. You can find the GitHub here: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver). The loading and configuration scripts are in the folder orbweaver/software/Python/config.
 
 Each of the loading script names starts with the prefix "load_via_". The next part of the name indicates the state of the Orbweaver you are trying to load. If the firmware bootloader is active, you will want to use one of the "bl" scripts. If the application is active, you will want to use one of the "app" scripts. And if the ROM bootloader is active, you will want to use one of the "rombl" scripts. The next part of the name indicates how Orbweaver is connected. if Orbweaver is connect via SPI, use a "spi" script. If it is connect via USB, use a "usb" script. So if you have a new Orbweaver, the firmware bootloader is active, and it is mounted on a Raspberry Pi, use the "load_via_bl_spi.py" script. If the Orbweaver has the application active, and it is connected via USB, use the "load_via_app_usb.py" script.
@@ -147,7 +159,7 @@ Over-the-air updates may be sent to remote Orbweavers via a locally connected Or
 
 For configuration, use the ow_config.py script. It contains the same functionality and options the desktop version. See the Orbweaver Configurator section of this document for details on the various options.
 
-# Orbweaver Networks Explained
+# Orbweaver Networks
 Orbweavers are designed to allow anyone to set-up a peer-to-peer, ad Hoc, mobile, hybrid, mesh network. Here's what those term mean:
 
 **peer-to-peer**: There are no designated clients or servers. Every node can request and provide data.   
@@ -235,10 +247,10 @@ If we ignore frequency hopping and packet processing overhead, assume maximum sy
 
 In practice, some packet loss is unavoidable. Furthermore, the number of packets lost is directly proportional to communication distance and packet length. That is, the longer individual packets are, and the further is the distance between Orbweavers, the more packet loss (and less data throughput) is to be expected. So longer packets don't necessarily lead to higher data throughput.
 
-# Radio Range and How to Optimize It
-In order to optimize transmission range, do the following:  
+# Communication Range
+In order to optimize Orbweaver communication range, do the following (where possible):  
 - **Ensure a clear Fresnel zone**  
-- **Operate in a low-noise environment (if possible)**
+- **Operate in a low-noise environment**
 - **Use the lowest possible bitrate**
 - **Use the lowest possible frequency**
 - **Use a high-quality (and if possible directional) antenna**
@@ -279,7 +291,7 @@ We equiped two Orbweavers with rubber ducky omni-directional antennas (no amplif
 
 We feel this was a fairly realistic (i.e. far from ideal but not terrible) set-up. However, many variables may affect communication range both positively and negatively, so these results are not intended as any sort of promise of gaurantee of performance.
 
-# Mounting on a Raspberry Pi and Case Options
+# Mounting and Encasing
 Orbweaver can be mounted on a Raspberry Pi 5 with 11 mm standoffs. If the Raspberry Pi is equiped with active cooling, 13 mm standoffs will be necessary. This will leave a 2 mm gap where the header connector mates with the Raspberry Pi, but there will still be plenty of surface area for the pins to contact.
 
 The HighPi Pro Case 5S for Raspberry Pi5 with Universal Opening will accomodate both the Raspberry Pi 5 and the mounted Orbweaver: [HighPi Pro Case 5S](https://shop.hipi.io/product/highpi-pro-case-5s-for-raspberry-pi5-with-universal-opening). In order to provide clearance for the antenna connector use 13 mm standoffs. Note: This is not an endorsement of HiPi.io. We are not affiliated with them in any way.
@@ -293,7 +305,7 @@ Additional documentation can be found on our GitHub in the documentation folder:
 
 For additional help, creat a post on the Discussion forum: [Orbweaver Forum](https://github.com/vespid-tech/orbweaver/discussions).
 
-# Disclaimer, License, and Legal Notice
+# Disclaimer, Licenses, and Legal Notice
 Orbweaver is distributed under the following open source licenses: 
 
 Hardware license: CERN Open Hardware Licence Version 2 – Strongly Reciprocal (CERN-OHL-S-2.0)
