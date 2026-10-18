@@ -143,15 +143,22 @@ Sends a reset command to the target Orbweaver. After an Orbweaver is loaded and 
 # Orbweaver Networks Explained
 Orbweavers are designed to allow anyone to set-up a peer-to-peer, ad Hoc, mobile, hybrid, mesh network. Here's what those term mean:
 
-peer-to-peer: Every node can request and provide data. There is no designated client or server. Every node can function as either.  
-ad hoc: Any node may communicate with any other node in range. No dedicated routers or switches exist. 
-mobile: Nodes may move relative to each other or all together while communicating.
-hybrid: The individual nodes on a network may communicate using different technologies. In the case of Orbweaver networks they may use RF, USB, or SPI.
-mesh: Each node in the network is capable of routing messages to enable nodes that are out of range of each other to communicate.
+**peer-to-peer**: There are no designated clients or servers. Every node can request and provide data.   
 
-For example, supposed you have a Raspberry Pi collecting data somewhere out of range of any WiFi network (or for some reason you are unable or unwilling to use WiFi). You want to access the data on that Rasperry Pi from a desktop some distance away. you may attach one Orbweaver to the Raspberry Pi and another to the desktop. The desktop and Raspberry Pi can now communicate via the Orbweaver network. Now supposed the Raspberry Pi is several kilometers away, too far for the Orbweavers to reach. A third (or as many as necessary) Orbweavers may be placed between the Raspberry Pi and desktop. The extra Orbweavers will forward the messages between the desktop and Respberry Pi.
+**ad hoc**: No dedicated routers or switches exist. Any node may communicate with any other node in range regardless of how the nodes are arranged.  
 
-Another example, you want to set-up secure communication between several Android mobile devices spread over a fairly large area without using existing cellular infrastructure. If each mobile device is connected to an Orbweaver, and an appropriate application is loaded on each mobile device, all the mobile devices will be able to communicate to one another on their own secure network.
+**mobile**: The positions of the nodes are not static. Nodes may move relative to each other or all together while continuing to communicate.
+
+**hybrid**: The individual nodes on a network may interact using different communication mediums. In the case of Orbweaver networks, they may use RF, USB, or SPI.
+
+**mesh**: Every node is also a router. Each node in the network is capable of routing messages to nodes that would otherwise be unreachable.
+
+### Orbweaver Network Examples
+**Remote Sensing**: A desktop computer is connected to Ethernet. A Raspberry Pi is connecting data that needs to be sent to the desktop computer. WiFi and Cellular cannot be used (e.g. the Raspberry Pi is too far away, does not have a cellular module, etc.). If an Orbweaver is connected to both the Raspberry Pi and desktop, the two can send and receive data via the Orbweaver. If they are so far away that not even the Orbweavers can communicate, as many Orbweavers as necessary can be placed between the two in order to establish a network.
+
+**Secure Private Network**: A number of people in a given area would like to communicate via their Android mobile device, but they are unwilling or unable to use a cellular network and no WiFi is available. Each person may install an app on their mobile device that acts as an Orbweaver node. They can then plug an Orbweaver into each of their cell phones and communicate freely on their own private network. 
+
+**Raspberry Pi Backdoor**: A Raspberry Pi has been deploy in a building, but it has dropped off the WiFi network. A daemon that acts as an Orbweaver node may be installed on the Raspberry Pi that communicates to an attached Orbweaver. Any computer with an Orbweaver can access and troubleshoot the Raspberry Pi without WiFi.
 
 ## Orbweaver Network Topology
 ### Node
@@ -172,7 +179,7 @@ Orbeaver radios operate in one of two unlicensed ISM bands. ITU region 1 (Europe
 See the Disclaimer and Legal Notice section of this document for more on this topic.
 
 # Encryption and Security
-Orbweaver uses AES-128 encryption for radio messages. Cracking a message encrypted with AES-128 with a properly randomized cipher key is considered infeasible with modern computer technology. It may be possible to crack AES-128 encrypted messages in the future using quantum computer (if quantum compters are ever successfully developed). Orbweaver encryption is performed with true random numbers. additional authorization data integrity checking is perfomred to prevent tampering of routing and addressing data. A 13 byte nonce is used to precent replay attacks.
+Orbweaver uses AES-128 encryption for radio messages. Cracking a message encrypted with AES-128 with a properly randomized cipher key is considered infeasible with modern computer technology. It may be possible to crack AES-128 encrypted messages in the future using quantum computer (if quantum compters are ever successfully developed). Orbweaver encryption is performed with true random numbers. Authorization tags and nonces are used to prevent tampering of clear text routing and addressing data as well as to precent replay attacks.
 
 Wired communication via USB and SPI is never encrypted. This means nodes that are not Orbweavers do not need cipher keys or encryption algorythms. This also means if an encryption key is lost, an Orbweaver can still be communicated with via USB or SPI (e.g. in order to turn off encryption or configure a new key).
 
@@ -181,25 +188,99 @@ Every Orbweaver on an encrypted network must have the same cipher key configured
 # Frequency Hopping
 In order to reduce latency and increase bandwidth, Orbweaver uses a unique frequency hopping algorithm. When frequency hopping in enabled, every Orbweaver in a network will randomly hop through every channel available based on the ITU region selected. Each channel is dwelled on for 400 ms. However, if a message is in the process of being received when a channel hop is due, the channel hop will be delayed until the entire message is received. This helps reduce latency by allowing Orbweavers to send long messages as soon as possible even if the network is about to hop to the next frequency. 
 
-### Potential Frequency Hopping Issues
-Before frequency hopping is enabled, every Orbweaver in a network must have the same channel map saved. Any Orbweaver may share a channel map with every Orbweaver on the network. Any Orbweaver that does not have the same channel map will not be able to maintain synchronization with the other Orbweavers in the network. When an Orbweaver initiates frequency hopping, a synchronization command is broadcast. Any Orbweaver that fails to receive this command will not begin hopping. However, synchronization commands are sent every 5-10 seconds. Eventually the radio should receive a synchronization command on what channel is is listening to, and assuming it possesses the same channel map, it will then be synchronized. However, since synchrinization timing is random, it is theoretically possbile (through highly unlikely) that synchronization will never happen. See the Orbweaver Programming Guide for more information about how to initiate frequency hopping.
+### Frequency Hopping Pitfalls
+Before frequency hopping is enabled, every Orbweaver in a network must have the same channel map saved. Any Orbweaver may share a channel map with every Orbweaver on the network. Any Orbweaver that does not have the same channel map will not be able to maintain synchronization with the other Orbweavers in the network. When an Orbweaver initiates frequency hopping, a synchronization command is broadcast. Any Orbweaver that fails to receive this command will not begin hopping. However, synchronization commands are sent every 5-10 seconds. Eventually the unsynchronized radio should receive a synchronization command on the channel it is current tuned to. Assuming it possesses the same channel map as the other nodes, it will then synchronize and begin hopping. However, since synchronization timing is random, it is theoretically possbile (though highly unlikely) that synchronization will never happen. See the Orbweaver Programming Guide for more information about how to initiate frequency hopping.
 
-
+In order to stay synchronized, synchronization commands are broadcast on the network every 5 to 10 seconds. Any Orbweaver might broadcast the synchronization command. Receipt of a synchronization command causes an Orbweaver to synchronize their hop clock and reset their synchronization command send timer. This means that which Orbweaver actually sends the synchronization command is random, so it is possible (though highly unlikely) that any given Orbweaver might never send a synchronization command. Therefore, if a network exists where two or more clusters of Orbweavers are only connected by a single Orbweaver, the clusters will stay synchronized internally, but if the one Orbweaver that bridges both clusters never gets a chance to send a synchronization command, the clusters' timing might drift away from each other until the various cluster are unable to communicate with other clusters even though they can still communicate with other members of their own cluster.
 
 # Bandwidth, Bitrate, and Data Throughput
+Orbweaver is capable of communicating at maximum over-the-air (OTA) bitrate of 500 kbps. 
+
+Radio data is packetized. Along with every packet of data, the following is sent by the radio:
+
+4 bytes: preamble  
+4 bytes: sync word  
+2 bytes: packet length  
+2 bytes: CRC  
+
+If encryption is used, the following data is added to each raadio packet:
+
+13 bytes: nonce  
+16 bytes: authorization tag
+
+Orbweaver messages are always transmitted as system commands. In addition to the data being sent each system command includes the following header data:
+
+1 byte: sequence number  
+1 byte: source address  
+1 byte: destination address  
+1 byte: TTL  
+1 byte: system command length  
+1 byte: system command  
+
+The maximum length of an Orbweaver system command is 255 bytes including the header, which leaves 249 bytes available for payload data. 
+
+If frequency hopping is used, additional bandwidth will be consumed by periodic channel hopping (which takes 3 ms per hop) as well as synchronization messages which are sent or received every 5 to 15 seconds. Every packet sent and received also consumes an additional ~250 us and up depending on whether encryption is used and how long the packet is as well as other variables.
+
+If we ignore frequency hopping and packet processing overhead, assume maximum system command size for every command sent, and zero packet loss, the following usable data throughput is theoretically possible:
+
+**Encryption disabled data throughput: ~94% of OTA bitrate**  
+**Encryption enabled data throughput: ~84% of OTA bitrate**
+
+In practice, some packet loss is unavoidable. Furthermore, the number of packets lost is directly proportional to communication distance and packet length. That is, the longer individual packets are, and the further is the distance between Orbweavers, the more packet loss (and less data throughput) is to be expected. So longer packets don't necessarily lead to higher data throughput.
 
 # Radio Range and How to Optimize It
+In order to optimize transmission range, do the following:  
+- **Ensure a clear Fresnel zone**  
+- **Operate in a low-noise environment (if possible)**
+- **Use the lowest possible bitrate**
+- **Use the lowest possible frequency**
+- **Use a high-quality (and if possible directional) antenna**
+- **Use a bi-directional amplifier**
 
-## Fresnel Zone
-## Operating Enviroment
-## Bitrate
-## Frequency
-## Antenna
-## Bi-Directional Amplifier
-## Real-World Test Results
+The details of the above suggestions are as follows:
+
+### Fresnel Zone
+Radios can communicate farther if they not only have a clear line-of-sight between them but also a clear Fresnel Zone. Anything in the Fresnel zone (like the ground) might interfer with a radio's signal. If you've ever wondered why antennas tend to be placed on towers and rooftops, this is why.
+
+Learn more about Fresnel Zone here: [Fresnel Zone](https://en.wikipedia.org/wiki/Fresnel_zone).
+
+### Operating Enviroment
+Environments that contain a lot of RF noise will reduce range. Orbweaver operates in the unlicensed ISM band. Because it is unlicensed lots of other things use it also. Dense urban environments tend to have high background noise levels in the frequency ranges Orbweaver utilizes, which reduces receiver sensitivity. Communication range will tend to be farther in rural (or other electro-magnetically quiet) environments.
+
+### Bitrate
+Lower bitrates allow for long range communication. One of the benefits of Orbweaver is that the bitrate is easily configured. In order to extend range, the lowest bitrate that supports a given use case should be used.
+
+### Frequency
+Under most circumstance, lower frequencies are capable of longer range communication. It might not make a noticible difference, but 902 MHz might add 2-3% to communication range.
+
+### Antenna
+For maximum communication range, a high-quality 50 Ohm antenna designed to operate at the frequency the radio utilizes must be used. For an omni-directional 915 MHz antenna, we recommend something like the following: [ANT-916-OC-LG-SMA](https://www.te.com/en/product-ANT-916-OC-LG-SMA.html) Note: This isn't an endorsement, we have no affiliation with TE Connectivity. Also, this antenna can usually be purchased cheaper from other vendors, and cheaper antennas from other manufacturers are also easily available. Just ensure whatever antenna you select has the followig attribute:
+
+Impedence: 50 Ohms  
+Operating Frequency: 915 Mhz (or 866 Mhz for ITU region 1)  
+Connector: SMA  
+
+Communication range can be significantly extended (in theory more than doubled) if one or both omni-directional antennas are replaced with directional antennas. However, the range is only extended in one direction obviously.
+
+### Bi-directional Amplifier
+Adding a bi-directional amplifier between the Orbweaver and Antenna to one or both Orbweavers can signifcantly increase the range. If an Orbweaver will always be receiving and not transmitting, a low noise amplifier can be attached. If an Orbweaver will always be transmitting and not receiving a power amplifier can be attached. All three of these devices with SMA connectors should be available for purchase online.
+
+Boosting transmission power using a power or bi-directional amplifier may cause Orbweaver to interfer with the operation of other devices in area that utilize the same frequency. To avoid jamming other devices (and to avoid violating local laws and regulations) frequency hopping may be necessary while using an amplifier. Without an amplifier, local regulations likely don't require frequency hopping. See the disclaimer, license, and legal notice section of this document for more.
+
+### Real-World Test Results
+We equiped two Orbweavers with rubber ducky omni-directional antennas (no amplifiers) in a fairly dense urban environment with the Orbweavers 2-3 meters off the ground and an otherwise fairly clear Fresnel zone. With this set-up we were able to communicate reliably at 9105 MHz and 50 kbs at a distance of 1 kilometer. In the same environment at 2 kilometers, we were able to send and receive occasional messages at 2.5 kbps, but most of the packets were lost. So the maximum effective communication range in this environment was somewhere bewteen 1 and 2 kilometers.
+
+We feel this was a fairly realistic (i.e. far from ideal but not terrible) set-up. However, many variables may affect communication range both positively and negatively, so these results are not intended as any sort of promise of gaurantee of performance.
 
 # Mounting on a Raspberry Pi and Case Options
+Orbweaver should mount on a Raspberry Pi 5 with 11 mm standoffs. there are no components on the bottom of Orbweaver, so there should be enough room for active cooling on the raspberry pi 5.
 
-# Help, Programming guide, etc.
+If a case is desired, the HighPi Pro Case 5S for Raspberry Pi5 with Universal Opening will accomodate both the Raspberry Pi 5 and the mounted Orbweaver: [HighPi Pro Case 5S](https://shop.hipi.io/product/highpi-pro-case-5s-for-raspberry-pi5-with-universal-opening). Note: **In order to provide clearance for the antenna connector use 13 mm standoffs**. This will leave a 2 mm gap where the header connector mates with the Raspberry Pi, but there will still be plenty on surface area for the pins to contact. Note: This is not an endorsement of HiPi.io. We are not affiliated with them in any way.
 
-# Disclaimer and Legal Notice
+As far as cases for unmounted Orbweavers, open-sided arcylic cases like the following will work: [Raspberry Pi HAT Size Protective Acrylic Case](https://geekworm.com/products/raspberry-pi-x900-x920-dac-protective-acrylic-case?variant=17919722192954&country=US&currency=USD&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic). The Orbweaver can be attached to the case without the Raspberry Pi by using 11 mm standoffs on the bottom. Note: This is not an endorsement of Geekworm. We are not affiliated with Geekworm in any way.
+
+Many other case options may be purchased online.
+
+# Help, Further Documentation, etc.
+
+# Disclaimer, License, and Legal Notice
