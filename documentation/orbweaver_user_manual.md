@@ -273,14 +273,28 @@ We equiped two Orbweavers with rubber ducky omni-directional antennas (no amplif
 We feel this was a fairly realistic (i.e. far from ideal but not terrible) set-up. However, many variables may affect communication range both positively and negatively, so these results are not intended as any sort of promise of gaurantee of performance.
 
 # Mounting on a Raspberry Pi and Case Options
-Orbweaver should mount on a Raspberry Pi 5 with 11 mm standoffs. there are no components on the bottom of Orbweaver, so there should be enough room for active cooling on the raspberry pi 5.
+Orbweaver can be mounted on a Raspberry Pi 5 with 11 mm standoffs. If the Raspberry Pi is equiped with active cooling, 13 mm standoffs will be necessary. This will leave a 2 mm gap where the header connector mates with the Raspberry Pi, but there will still be plenty of surface area for the pins to contact.
 
-If a case is desired, the HighPi Pro Case 5S for Raspberry Pi5 with Universal Opening will accomodate both the Raspberry Pi 5 and the mounted Orbweaver: [HighPi Pro Case 5S](https://shop.hipi.io/product/highpi-pro-case-5s-for-raspberry-pi5-with-universal-opening). Note: **In order to provide clearance for the antenna connector use 13 mm standoffs**. This will leave a 2 mm gap where the header connector mates with the Raspberry Pi, but there will still be plenty on surface area for the pins to contact. Note: This is not an endorsement of HiPi.io. We are not affiliated with them in any way.
+The HighPi Pro Case 5S for Raspberry Pi5 with Universal Opening will accomodate both the Raspberry Pi 5 and the mounted Orbweaver: [HighPi Pro Case 5S](https://shop.hipi.io/product/highpi-pro-case-5s-for-raspberry-pi5-with-universal-opening). In order to provide clearance for the antenna connector use 13 mm standoffs. Note: This is not an endorsement of HiPi.io. We are not affiliated with them in any way.
 
-As far as cases for unmounted Orbweavers, open-sided arcylic cases like the following will work: [Raspberry Pi HAT Size Protective Acrylic Case](https://geekworm.com/products/raspberry-pi-x900-x920-dac-protective-acrylic-case?variant=17919722192954&country=US&currency=USD&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic). The Orbweaver can be attached to the case without the Raspberry Pi by using 11 mm standoffs on the bottom. Note: This is not an endorsement of Geekworm. We are not affiliated with Geekworm in any way.
+Open-sided arcylic cases like the following may be used to encase an unmounted Orbweaver: [Raspberry Pi HAT Size Protective Acrylic Case](https://geekworm.com/products/raspberry-pi-x900-x920-dac-protective-acrylic-case?variant=17919722192954&country=US&currency=USD&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic). The Orbweaver can be attached to the acrylic panels without the Raspberry Pi by using 11 mm standoffs on the bottom. Note: This is not an endorsement of Geekworm. We are not affiliated with Geekworm in any way.
 
 Many other case options may be purchased online.
 
 # Help, Further Documentation, etc.
+Additional documentation can be found on our GitHub in the documentation folder: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver).
+
+For additional help, creat a post on the Discussion forum: [Orbweaver Forum](https://github.com/vespid-tech/orbweaver/discussions).
 
 # Disclaimer, License, and Legal Notice
+Orbweaver is distributed under the following open source licenses: 
+
+Hardware license: CERN Open Hardware Licence Version 2 – Strongly Reciprocal (CERN-OHL-S-2.0)
+Software and firmware license: GNU General Public License v3.0 (GPL-3.0-only)
+Documentation: Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+
+For the full licenses see our GitHub: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver)
+
+"Vespid," "Orbweaver," and associated logos are trademarks of Vespid.
+
+Orbweaver is provided “as is,” without warranty of any kind, express or implied. In no event shall Orbweaver developers or contributors be liable for any claim, damages, or other liability arising from its use. Orbweaver is intended for evaluation and development use only. It is not supplied as a finished product and is not certified for use in any product made for sale to the general public. The purchaser is responsible for ensuring that the final configuration (including but not limited to firmware configuration, transmission power, antenna selection, transmission frequency, etc.), complies with applicable regulatory requirements.
