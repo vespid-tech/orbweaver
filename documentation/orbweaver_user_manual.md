@@ -303,7 +303,7 @@ Many other case options may be purchased online.
 # Help, Further Documentation, etc.
 Additional documentation can be found on our GitHub in the documentation folder: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver).
 
-For additional help, creat a post on the Discussion forum: [Orbweaver Forum](https://github.com/vespid-tech/orbweaver/discussions).
+For additional help, create a post on the Discussion forum: [Orbweaver Forum](https://github.com/vespid-tech/orbweaver/discussions).
 
 # Disclaimer, Licenses, and Legal Notice
 Orbweaver is distributed under the following open source licenses: 

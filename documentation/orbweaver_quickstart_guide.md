@@ -2,7 +2,8 @@
 - [Introduction](#introduction)
 - [Configuration with Windows](#configuration-with-windows)
 - [Configuration with Raspberry Pi](#configuration-with-raspberry-pi)
-- [Help, further configuration, programming guide, etc.](#help-further-configuration-programming-guide-etc)
+- [Help, Further Documentation, etc.](#help-further-documentation-etc)
+- [Disclaimer, Licenses, and Legal Notice](#disclaimer-licenses-and-legal-notice)
 
 # Introduction
 
@@ -77,12 +78,20 @@ $ python load_via_bl_usb.py -p [comport] -f [path to application binary]
 6) **Run the ow_config.py script**.  
 The ow_config has the same options and functionality as the desktop Configurator, so please refer to the Desktop Configuration section in this document for configuration and test instructions.
 
-# Help, further configuration, programming guide, etc.
+# Help, Further Documentation, etc.
+Additional documentation can be found on our GitHub in the documentation folder: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver).
 
-For troubleshooting communication issues refer to the following document:  [Orbweaver Troubleshooting](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_troubleshooting.md)
+For additional help, create a post on the Discussion forum: [Orbweaver Forum](https://github.com/vespid-tech/orbweaver/discussions).
 
-For all other questions, concerns, etc., refer to the Orbweaver GitHub Q&A discussion:  [Orbweaver Q&A](https://github.com/vespid-tech/orbweaver/discussions/categories/q-a)
+# Disclaimer, Licenses, and Legal Notice
+Orbweaver is distributed under the following open source licenses: 
 
-For more information on how to use Orbweaver (including configuration options not covered in this guide), refer to the following document: [Orbweaver User Manual](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_user_manual.md)
+Hardware license: CERN Open Hardware Licence Version 2 – Strongly Reciprocal (CERN-OHL-S-2.0)
+Software and firmware license: GNU General Public License v3.0 (GPL-3.0-only)
+Documentation: Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
-For information on writing communication software and integrating Orbweaver into your software application, refer to the following document: [Orbweaver Programming Guide](https://github.com/vespid-tech/orbweaver/blob/main/documentation/orbweaver_programming_guide.md)
+For the full licenses see our GitHub: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver)
+
+"Vespid," "Orbweaver," and associated logos are trademarks of Vespid.
+
+Orbweaver is provided “as is,” without warranty of any kind, express or implied. In no event shall Orbweaver developers or contributors be liable for any claim, damages, or other liability arising from its use. Orbweaver is intended for evaluation and development use only. It is not supplied as a finished product and is not certified for use in any product made for sale to the general public. The purchaser is responsible for ensuring that the final configuration (including but not limited to firmware configuration, transmission power, antenna selection, transmission frequency, etc.), complies with applicable regulatory requirements.
