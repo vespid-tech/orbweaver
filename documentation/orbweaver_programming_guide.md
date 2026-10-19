@@ -138,11 +138,7 @@ RSSI Get commands (ID: 39) are used to request the RSSI value of the last messag
 Orbweaver keeps track of how many RF messages have been sent and received since start-up. These counts can be requested by sending a "Radio Stats Get" (ID: 48) command. If an Orbweaver receives a Radio Stats Get command it will respond with a "Radio Stats" (ID: 49) command. The Radio Stats command parameter is composed of 2 unsigned 32-bit numbers. The first number is the sent count. The second number is the received count. It order to clear both counts, a "Radio Stats Clear" (ID: 49) command can be sent to the Orbweaver.
 
 # Python API
-### Send and Receive Blob via USB
-### Send and Receive Blob via SPI
-### Echo
-### RSSI Get
-### radio stats Get/Clear
+Python Code demonstrating how to interact with an Orbweaver can be found in the repository in the following folder: /orbweaver/tree/main/software/Python/examples. The scripts in the folder show how use the above selected commands. Each script has plenty of comments that explain what it is doing, and and how to use it.
 
 # Help, Further Documentation, etc.
 Additional documentation can be found on our GitHub in the documentation folder: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver).
