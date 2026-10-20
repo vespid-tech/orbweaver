@@ -1,5 +1,11 @@
 ## Table of Contents
 - [Introduction](#introduction)
+- [Physical Interfaces](#physical-interfaces)
+- [Orbweaver Protocol](#orbweaver-protocol)
+- [Selected System Commands](#selected-system-commands)
+- [Python API](#python-api)
+- [Help, Further Documentation, etc.](#help-further-documentation-etc)
+- [Disclaimer, Licenses, and Legal Notice](#disclaimer-licenses-and-legal-notice)
 
 # Introduction
 All Orbweaver communication is packetized. A packet is referred to as a "system command". System commands are formatted the same regardless of.
@@ -22,7 +28,7 @@ hardware flow control: yes (RTS/CTS)
 Orbweaver can communicate with a Raspberry Pi via SPI. Orbweaver is always configured as a SPI slave. The SPI clock operates at 1 MHz. In additional to the standard SPI pins two pins are used to facilitate communication: Data Ready and Busy. Both pins are open drain inputs to the Raspberry Pi. Orbweaver pulls Data Ready low when it has a system command to send to the Raspberry Pi. Orbweaver pulls Busy low went it begins receiving a system command, and holds it low until the command is processed. No additional system commands should be sent until this pin is set high.
 
 # Orbweaver Protocol
-Every piece of software communicating to an Orbweaver (as well as every Orbweaver) is a node. All communication bewteen nodes is accomplished using system commands. Once initialized, Orbweavers are always listening for system commands via USB and SPI. They also always listen via RF unless transmitting or changing channels. 
+Every piece of software communicating to an Orbweaver (as well as every Orbweaver) is a node. All communication between nodes is accomplished using system commands. Once initialized, Orbweavers are always listening for system commands via USB and SPI. They also always listen via RF unless transmitting or changing channels. 
 
 All system commands sent and received via USB and SPI will be proceeded by a start byte and followed by a stop byte. Start and stop bytes are not considered parts of system commands. Start and stop bytes are not used in RF communication. 
 
@@ -56,7 +62,7 @@ When Orbweaver receives a message not intended for any member of it's subnet, it
 The address of the node that generated the system command.
 
 ### Destination Address
-The intended final receipiant of the system command.
+The intended final recipient of the system command.
 
 ### Time To Live
 How many times to forward a message received via RF. If Orbweaver receives a system command via USB or SPI, and the system command isn't addressed to itself, Orbweaver will forward the message even if TTL is 0 and will not decrement TTL.
@@ -73,18 +79,16 @@ The command ID combined with the length is used to decode the parameter (if ther
 
 Any command can be sent to any node, but not every node is capable of processing every command. If an Orbweaver receives a command it cannot process, it will ignore it. 
 
-A full list of system commands can be found in the repo in the following file: /orbweaver/tree/main/software/Python/shared/ow_protocol.py.
+A full list of system commands can be found in the source code repository in the following file: /orbweaver/tree/main/software/Python/shared/ow_protocol.py.
 
 ### Parameter
 The parameter is optional and variable in length.
 
-Many system commands require parameters. When parameters are required, they must be formatted properly. A partial list of the parameters may be found in the repo in the following file: /orbweaver/tree/main/software/Python/shared/ow_protocol.py.
+Many system commands require parameters. When parameters are required, they must be formatted properly. A partial list of the parameters may be found in the source code repository in the following file: /orbweaver/tree/main/software/Python/shared/ow_protocol.py.
 
 # Selected System Commands
 
 For the full list of system commands and a partial list of parameters see the following file in the repo: /orbweaver/tree/main/software/Python/shared/ow_protocol.py.
-
-## Selected System Commands
 
 ### SPI/UART Peer Commands
 Orbweaver can communicate to up to 6 peer nodes via USB and 6 peer nodes via SPI (for a total of 13 nodes on a subnet). During initialization, Orbweaver will attempt to discover how many peer nodes are on its subnet. In order to do this it will send a "SPI Peers Request" (ID: 36) via SPI and a "UART Peers Request" (ID: 34) via USB. Any nodes that are attached should respond with either a "UART Peers" (ID: 35) or a "SPI Peers" (ID: 37) command depending on how they are connected. Connected nodes are not required to respond to peer request commands, but Orbweaver will not send messages to them unless it knows they exist, and it can't know they exist if it never receives a peers command. Each time a node is connected to an already running Orbweaver, the node should send a peers command to let the Orbweaver know it is connected. The parameter of both the "SPI Peers" and "UART Peers" commands contains a list of up to 6 peer addresses. It must contain at least 1 peer address.
@@ -129,7 +133,7 @@ Echo commands (ID: 1) can be sent to any node and can have any parameter. Any no
 ### Error
 Error commands (ID: 3) are sent to all peers on a subnet when an Orbweaver encounters certain errors. Orbweaver never send error commands via RF. Every error command will have a 1 byte parameter that specifies the error. These commands don't need to be responded to, so they can be safely ignored. 
 
-A list of errors can be found in the repo in the following file: /orbweaver/tree/main/firmware/orbweaver/source/status.h.
+A list of errors can be found in the source code repository in the following file: /orbweaver/tree/main/firmware/orbweaver/source/status.h.
 
 ### RSSI Commands
 RSSI Get commands (ID: 39) are used to request the RSSI value of the last message the Orbweaver received via RF. When an RSSI Get command is received by an Orbweaver, it will respond with an RSSI command (ID: 40). The parameter of the RSSI command is 1 signed byte with the units dBm.
@@ -148,12 +152,12 @@ For additional help, create a post on the Discussion forum: [Orbweaver Forum](ht
 # Disclaimer, Licenses, and Legal Notice
 Orbweaver is distributed under the following open source licenses: 
 
-Hardware license: CERN Open Hardware Licence Version 2 – Strongly Reciprocal (CERN-OHL-S-2.0)
+Hardware license: CERN Open Hardware License Version 2 – Strongly Reciprocal (CERN-OHL-S-2.0)
 Software and firmware license: GNU General Public License v3.0 (GPL-3.0-only)
 Documentation: Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
 
 For the full licenses see our GitHub: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver)
 
-"Vespid," "Orbweaver," and associated logos are trademarks of Vespid.
+"Vespid," "Orbweaver," and associated logos are trademarks of Vespid, LLC.
 
 Orbweaver is provided “as is,” without warranty of any kind, express or implied. In no event shall Orbweaver developers or contributors be liable for any claim, damages, or other liability arising from its use. Orbweaver is intended for evaluation and development use only. It is not supplied as a finished product and is not certified for use in any product made for sale to the general public. The purchaser is responsible for ensuring that the final configuration (including but not limited to firmware configuration, transmission power, antenna selection, transmission frequency, etc.), complies with applicable regulatory requirements.

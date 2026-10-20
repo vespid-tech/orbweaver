@@ -25,7 +25,7 @@
        alt="Configurator GUI">
 </p>
 
-4) **Connect the Orbweaver to the PC via a USB cable**. PWR LED should illuminate indicating Orbwaever is powered. LEDs 3, 2, and 1, should cycle on/off in that order indicating the bootloader is active.
+4) **Connect the Orbweaver to the PC via a USB cable**. PWR LED should illuminate indicating Orbweaver is powered. LEDs 3, 2, and 1, should cycle on/off in that order indicating the bootloader is active.
 5) In the Configurator next to Com port: dropdown, **press the Refresh button**. The dropdown should populate the comport dropdown Orbweaver is using. **Make sure the comport used by Orbweaver is selected**.
 6) **Click the Browse button** and browse to the Orbweaver binary downloaded in step 1.
 7) Click **"Load Binary"**. Loading should complete after several seconds. Once loading is complete, a load complete dialog box should pop up. **Press OK** on the Load Complete dialog box. LED 3 should now be flashing, and LEDs 1 and 2 should be off indicating the application is active. The binary is now loaded.
@@ -92,6 +92,6 @@ Documentation: Creative Commons Attribution-NonCommercial 4.0 International (CC 
 
 For the full licenses see our GitHub: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver)
 
-"Vespid," "Orbweaver," and associated logos are trademarks of Vespid.
+"Vespid," "Orbweaver," and associated logos are trademarks of Vespid, LLC.
 
 Orbweaver is provided “as is,” without warranty of any kind, express or implied. In no event shall Orbweaver developers or contributors be liable for any claim, damages, or other liability arising from its use. Orbweaver is intended for evaluation and development use only. It is not supplied as a finished product and is not certified for use in any product made for sale to the general public. The purchaser is responsible for ensuring that the final configuration (including but not limited to firmware configuration, transmission power, antenna selection, transmission frequency, etc.), complies with applicable regulatory requirements.
