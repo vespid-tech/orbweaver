@@ -91,7 +91,9 @@ Many system commands require parameters. When parameters are required, they must
 For the full list of system commands and a partial list of parameters see the following file in the repo: /orbweaver/tree/main/software/Python/shared/ow_protocol.py.
 
 ### SPI/UART Peer Commands
-Orbweaver can communicate to up to 6 peer nodes via USB and 6 peer nodes via SPI (for a total of 13 nodes on a subnet). During initialization, Orbweaver will attempt to discover how many peer nodes are on its subnet. In order to do this it will send a "SPI Peers Request" (ID: 36) via SPI and a "UART Peers Request" (ID: 34) via USB. Any nodes that are attached should respond with either a "UART Peers" (ID: 35) or a "SPI Peers" (ID: 37) command depending on how they are connected. Connected nodes are not required to respond to peer request commands, but Orbweaver will not send messages to them unless it knows they exist, and it can't know they exist if it never receives a peers command. Each time a node is connected to an already running Orbweaver, the node should send a peers command to let the Orbweaver know it is connected. The parameter of both the "SPI Peers" and "UART Peers" commands contains a list of up to 6 peer addresses. It must contain at least 1 peer address.
+Orbweaver can communicate to up to 6 peer nodes via USB and 6 peer nodes via SPI (for a total of 13 nodes on a subnet). During initialization, Orbweaver will attempt to discover how many peer nodes are on its subnet. In order to do this it will send a "SPI Peers Request" (ID: 36) via SPI and a "UART Peers Request" (ID: 34) via USB. Any nodes that are attached should respond with either a "UART Peers" (ID: 35) or a "SPI Peers" (ID: 37) command depending on how they are connected. Connected nodes are not required to respond to peer request commands, but Orbweaver will not send messages to them unless it knows they exist, and it can't know they exist if it never receives a peers command. Each time a node is connected to an already running Orbweaver, the node should send a peers command to let the Orbweaver know it is connected. The parameter of both the "SPI Peers" and "UART Peers" commands contains a list of up to 6 peer addresses. 
+
+When disconnecting from an Orbweaver, a "SPI Peers" or "UART Peers" (depending on what bus is being disconnected) command should be sent with no parameter. Sending the command with no parameter lets the Orbweaver know that the peers on the specified bus have been disconnected.
 
 Orbweaver will not respond to SPI or UART peer commands. In order to ensure the commands were successfully sent, an echo command can be used to test communication.
 
@@ -99,29 +101,29 @@ Example 1:
 
 A desktop program is initialized. The program uses address 0xFE and also wishes to receive systems commands for address 0xFD from an Orbweaver that is connected via USB and is configured with address 0x06. The following bytes should be sent to the Orbweaver:
 
-0xAA    start byte
-0x00    sequence
-0xFE    source address
-0x06    destination address
-0x00    TTL
-0x08    length
-0x23    command (UART peers)
-0xFE    parameter byte 0 (first peer address)
-0xFD    parameter byte 1 (second peer address)
-0xCC    stop byte
+0xAA    start byte  
+0x00    sequence  
+0xFE    source address  
+0x06    destination address  
+0x00    TTL  
+0x08    length  
+0x23    command (UART peers)  
+0xFE    parameter byte 0 (first peer address)  
+0xFD    parameter byte 1 (second peer address)  
+0xCC    stop byte  
 
 Example 2:
 
 A Raspberry Pi program is initialized that wishes to use address 0xFD. The Raspberry Pi has an Orbweaver mounted, but the Orbweaver's address is unknown. The following bytes should be sent to the Orbweaver:
 
-0xAA    start byte
-0x00    sequence
-0xFD    source address
-0x06    destination address
-0x00    TTL
-0x07    length
-0x25    command (SPI peers)
-0xFD    parameter byte 0 (first peer address)
+0xAA    start byte  
+0x00    sequence  
+0xFD    source address  
+0x06    destination address  
+0x00    TTL  
+0x07    length  
+0x25    command (SPI peers)  
+0xFD    parameter byte 0 (first peer address)  
 0xCC    stop byte
 
 ### Blob
