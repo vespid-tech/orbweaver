@@ -172,6 +172,16 @@ Orbweavers are designed to allow anyone to set-up a peer-to-peer, ad Hoc, mobile
 
 **mesh**: Every node is also a router. Each node in the network is capable of routing messages to nodes that would otherwise be unreachable.
 
+### System Command Handling
+If an Orbweaver receives a properly formatted message addressed to itself with a command ID it is capable of procesing, it processes the system command. In other cases, the following list explains how the system command is handled.
+
+1) If the system command matches any of the last 5 system commands received as determined by the sequence number, source address, and destination, the system command is ignored.
+2) If the system command is impoperly formatted, unexpectedly encrypted, or in any way corrupted, the system command is ignored.
+3) If the command ID is not one the Orbweaver can process, the system command is ignored.
+4) If the destination address matches the destination address of any node on the Orbweaver's subnet, the system command is forwarded via the appropriate wired connection.
+5) If the source address matches the source address of any node on the Orbweaver's subnet, and the destination address does not match the Orbweaver's, the system command is transmitted via RF.
+6) If neither the destination nor source addresses match the Orbweaver or any node on the Orbweaver's subnet, and the TTL is greater than 0, the Orbweaver decrements TTL and waits a random amount of time between 0-127 ms before transmitting the system command via RF.
+
 ### Orbweaver Network Examples
 **Remote Sensing**: A desktop computer is connected to Ethernet. A Raspberry Pi is connecting data that needs to be sent to the desktop computer. WiFi and Cellular cannot be used (e.g. the Raspberry Pi is too far away, does not have a cellular module, etc.). If an Orbweaver is connected to both the Raspberry Pi and desktop, the two can send and receive data via the Orbweaver. If they are so far away that not even the Orbweavers can communicate, as many Orbweavers as necessary can be placed between the two in order to establish a network.
 
@@ -189,8 +199,8 @@ All of the nodes on all of the subnets capable of communicating with each other.
 ### Addresses
 Every node on a network must have a unique address. There are 255 addresses available (1-255). Address 0 is invalid, and cannot be used by any node. Address 255 is the broadcast address. Messages sent to this address will be received and processed by any node that receives it. All other numbers (1-254) may be used as node addresses. By convention, Orbweavers start with address 1 and count up. All non-Orbweaver nodes start at address 254 and count down. For instance, if you have a network consisting of 3 Orbweavers, a Raspberry Pi, and a desktop running a communication script and the Orbweaver Configurator. The Orbweavers may use addresses 1, 2, and 3. The Raspberry Pi may use address 254. The desktop communication script may use address 253, and the Orbweaver Configurator that is also running on the desktop may use address 252.
 
-## Messaging 
-All Orbweaver network communication is packet based. That is, all messages sent between nodes must be sent as properly formatted packets called "system commands." For more on messaging see the Orbweaver Programming Guide.
+## System Commands 
+All Orbweaver network communication is packet based. That is, all messages sent between nodes must be sent as properly formatted packets called "system commands." For more on system commands see the Orbweaver Programming Guide.
 
 # Frequency Bands
 Orbeaver radios operate in one of two unlicensed ISM bands. ITU region 1 (Europe, Africa, and West Asian) has 15 channels ranging from 863 MHz to 870 MHz. ITU Region 2 (North and South America) has 53 channels ranging from 902 MHz to 928 MHz. Many if not most other regions of the world have unlicensed bands that overlap with the frequencies used by ITU region 1 or 2, so a default channel from those bands may be used. If frequency hopping is enabled, the Orbweavers will hop through all the available channels in the select ITU region in random order.
