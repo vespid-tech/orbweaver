@@ -88,7 +88,7 @@ Orbweaver is distributed under the following open source licenses:
 
 Hardware license: CERN Open Hardware Licence Version 2 – Strongly Reciprocal (CERN-OHL-S-2.0)
 Software and firmware license: GNU General Public License v3.0 (GPL-3.0-only)
-Documentation: Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+Documentation: Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)
 
 For the full licenses see our GitHub: [Orbweaver GitHub](https://github.com/vespid-tech/orbweaver)
 
